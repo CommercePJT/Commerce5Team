@@ -58,6 +58,7 @@ public class ProductService {
                 product.getAdmin().getEmail()
         );
     }
+
     @Transactional(readOnly = true)
     public List<ProductResponse> getProducts() {
         return productRepository.findAll()
@@ -66,7 +67,20 @@ public class ProductService {
                 .toList();
     }
 
+    public ProductResponse updateProduct(
+            Long productId,
+            UpdateProductRequest request
+    ) {
+        Product product = findProduct(productId);
 
+        product.update(
+                request.getName(),
+                request.getCategory(),
+                request.getPrice()
+        );
+
+        return toProductResponse(product);
+    }
 
 
     private ProductResponse toProductResponse(Product product) {
