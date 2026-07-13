@@ -1,6 +1,6 @@
-package com.example.commercepjt.admin.controller;
+package com.example.commercepjt.auth.controller;
 
-import com.example.commercepjt.admin.service.AuthService;
+import com.example.commercepjt.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
