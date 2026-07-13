@@ -48,7 +48,7 @@ public class ProductService {
         Product product = findProduct(productId);
 
         return new ProductDetailResponse(
-                product.getProductName(),
+                product.getName(),
                 product.getCategory(),
                 product.getPrice(),
                 product.getStock(),
@@ -113,8 +113,8 @@ public class ProductService {
 
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
-                product.getId(),
-                product.getProductName(),
+                product.getProductId(),
+                product.getName(),
                 product.getCategory(),
                 product.getPrice(),
                 product.getStock(),
