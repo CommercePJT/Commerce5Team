@@ -68,10 +68,10 @@ public class Product extends BaseEntity {
     }
 
     public void changeStock(int stock) {
-        this.stock = stock;
         if (stock < 0) {
             throw new IllegalArgumentException("재고는 0개 이상이어야 합니다.");
         }
+        this.stock = stock;
         updateStatusByStock();
     }
 
