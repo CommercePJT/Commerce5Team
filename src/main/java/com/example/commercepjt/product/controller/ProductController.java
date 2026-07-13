@@ -58,6 +58,16 @@ public class ProductController {
         );
     }
 
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<ProductResponse> updateStatus(
+            @PathVariable Long productId,
+            @RequestBody UpdateProductStatusRequest request
+    ) {
+        return ResponseEntity.ok(
+                productService.updateStatus(productId, request)
+        );
+    }
+
 
 
 

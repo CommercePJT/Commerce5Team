@@ -93,6 +93,17 @@ public class ProductService {
         return toProductResponse(product);
     }
 
+    public ProductResponse updateStatus(
+            Long productId,
+            UpdateProductStatusRequest request
+    ) {
+        Product product = findProduct(productId);
+
+        product.changeStatus(request.getStatus());
+
+        return toProductResponse(product);
+    }
+
 
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
