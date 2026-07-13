@@ -8,6 +8,7 @@ import com.example.commercepjt.auth.dto.SignupAdminResponse;
 import com.example.commercepjt.auth.exception.CustomException;
 import com.example.commercepjt.auth.exception.ErrorCode;
 import com.example.commercepjt.common.config.PasswordEncoder;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,22 +51,30 @@ public class AuthService {
     }
 
     // 로그인
-    @Transactional
-    public Long login(LoginAdminRequest request) {
+    public void login(
+            LoginAdminRequest request,
+            HttpSession session
+    ) {
+        // 이메일로 관리자 조회
+        Admin admin = adminRepository.findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new CustomException(ErrorCode.ADMIN_NOT_FOUND)
+                );
 
-        // admin 조회
-        Admin admin = adminRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않은 관리자입니다."));
-
-        // 비밀번호 확인
-        if (!admin.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치 하지 않습니다.");
+        // 입력 비밀번호와 암호화된 비밀번호 비교
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                admin.getPassword()
+        )) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // 로그인 성공 반환
-        return admin.getId();
-
+        // 로그인 성공 시 세션에 관리자 정보 저장
+        session.setAttribute("ADMIN_ID", admin.getId());
+        session.setAttribute("ADMIN_EMAIL", admin.getEmail());
+        session.setAttribute("ADMIN_ROLE", admin.getRole());
     }
+
 
     // 이메일 중복 검사
     private void validateDuplicateEmail(String email) {
@@ -74,5 +83,11 @@ public class AuthService {
         if (adminRepository.existsByEmail(email)) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
+    }
+
+    public void logout(HttpSession session) {
+
+        // 현재 세션을 무효화하여 로그인 정보 삭제
+        session.invalidate();
     }
 }

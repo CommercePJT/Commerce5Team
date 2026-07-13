@@ -29,33 +29,28 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(request));  // 201 C
     }
 
-    // 관리자 로그인
+    // 로그인
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginAdminRequest request,
-                                      HttpServletRequest servletRequest){
+    public ResponseEntity<Void> login(
+            @Valid @RequestBody LoginAdminRequest request,
+            HttpSession session
+    ) {
+        // 로그인 검증 및 세션 생성
+        authService.login(request, session);
 
-        // 이메일과 일치하는 관리자id 반환
-        Long id = authService.login(request);
-
-        // 세션 생성
-        HttpSession session = servletRequest.getSession();
-
-        // 세션에 로그인한 관리자id 저장
-        session.setAttribute("LOGIN_ADMIN", id);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
+        // 로그인 성공 시 200 OK 반환
+        return ResponseEntity.ok().build();
     }
 
-    // 관리자 로그아웃
+    // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest servletRequest) {
+    public ResponseEntity<Void> logout(
+            HttpSession session
+    ) {
+        // 현재 세션 삭제
+        authService.logout(session);
 
-        // 기존 세션 가져오기, 없으면 null
-        HttpSession session = servletRequest.getSession(false);
-
-        // 세션이 존재하면 무효화
-        if ( session != null) session.invalidate();
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        // 로그아웃 성공 시 204 No Content 반환
+        return ResponseEntity.noContent().build();
     }
 }
