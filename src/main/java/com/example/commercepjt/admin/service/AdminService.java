@@ -162,4 +162,19 @@ public class AdminService {
                 admin.getRejectReason()
         );
     }
+
+    // 관리자 삭제
+    public void deleteAdmin(Long id) {
+
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+
+        // 2. 삭제
+        adminRepository.delete(admin);
+
+    }
 }

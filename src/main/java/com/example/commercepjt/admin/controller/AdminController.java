@@ -84,5 +84,16 @@ public class AdminController {
                 adminService.rejectAdmin(id, request)
         );
     }
+
+    // 관리자 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAdmin(
+            @PathVariable Long id
+    ) {
+
+        adminService.deleteAdmin(id);
+
+        return ResponseEntity.noContent().build();
+    }
     // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
 }
