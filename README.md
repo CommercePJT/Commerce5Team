@@ -73,7 +73,7 @@
 
 ## 🗂 ERD
 
-![ERD]<img width="1536" height="1024" alt="erd" src="https://github.com/user-attachments/assets/8b3b5abd-9002-4c0c-8fb8-08e89a55eb31" />
+<img width="1536" height="1024" alt="erd" src="https://github.com/user-attachments/assets/8b3b5abd-9002-4c0c-8fb8-08e89a55eb31" />
 
 - 모든 관계는 **1:N** (FK는 자식 테이블에 위치)
 - `orders.admin_id`는 **nullable** — 고객 직접 주문 시 등록 관리자 없음
