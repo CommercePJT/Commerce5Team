@@ -2,16 +2,23 @@ package com.example.commercepjt.product.service;
 
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.product.dto.CreateProductRequest;
 import com.example.commercepjt.product.dto.ProductDetailResponse;
+import com.example.commercepjt.product.dto.ProductListResponse;
 import com.example.commercepjt.product.dto.ProductResponse;
 import com.example.commercepjt.product.dto.UpdateProductRequest;
 import com.example.commercepjt.product.dto.UpdateProductStatusRequest;
 import com.example.commercepjt.product.dto.UpdateStockRequest;
 import com.example.commercepjt.product.entity.Product;
+import com.example.commercepjt.product.entity.ProductStatus;
 import com.example.commercepjt.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,11 +67,28 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> getProducts() {
-        return productRepository.findAll()
-                .stream()
+    public ProductListResponse getProducts(String keyword, int page, int size,
+                                           String sortBy, String direction,
+                                           String category, ProductStatus status) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        Page<Product> productPage = productRepository.search(keyword, category, status, pageable);
+
+        List<ProductResponse> products = productPage.getContent().stream()
                 .map(this::toProductResponse)
                 .toList();
+
+        PageInfo pageInfo = new PageInfo(
+                page,
+                size,
+                productPage.getTotalElements(),
+                productPage.getTotalPages()
+        );
+
+        return new ProductListResponse(products, pageInfo);
     }
 
     public ProductResponse updateProduct(
