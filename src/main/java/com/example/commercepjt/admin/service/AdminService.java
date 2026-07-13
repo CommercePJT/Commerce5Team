@@ -2,13 +2,21 @@ package com.example.commercepjt.admin.service;
 
 import com.example.commercepjt.admin.dto.*;
 import com.example.commercepjt.admin.entity.Admin;
+import com.example.commercepjt.admin.entity.AdminRole;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.admin.repository.AdminSpecification;
 import com.example.commercepjt.common.config.PasswordEncoder;
+import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -176,5 +184,53 @@ public class AdminService {
         // 2. 삭제
         adminRepository.delete(admin);
 
+    }
+
+    // 내 프로필 조회
+    // 로그인 세션 구현 후 작성 예정
+    public ProfileResponse getMyProfile() {
+
+        // TODO: 로그인 세션에서 현재 관리자 ID 가져오기
+        return null;
+    }
+
+    // 관리자 리스트 조회
+    public AdminListResponse getAdmins(
+            String keyword,
+            AdminRole role,
+            AdminStatus status,
+            Pageable pageable
+    ) {
+        // 1. 검색 조건 생성
+        Specification<Admin> spec =
+                Specification.where(AdminSpecification.keyword(keyword))
+                        .and(AdminSpecification.role(role))
+                        .and(AdminSpecification.status(status));
+
+        // 2. 조건에 맞는 관리자 조회 (페이징 적용)
+        Page<Admin> adminPage =
+                adminRepository.findAll(spec, pageable);
+
+        // 3. Entity -> DTO 변환
+        List<AdminResponse> admins =
+                adminPage.getContent()
+                        .stream()
+                        .map(AdminResponse::new)
+                        .toList();
+
+        // 4. 페이징 정보 생성
+        PageInfo pageInfo =
+                new PageInfo(
+                        adminPage.getNumber() + 1,
+                        adminPage.getSize(),
+                        adminPage.getTotalElements(),
+                        adminPage.getTotalPages()
+                );
+
+        // 5. 최종 응답 반환
+        return new AdminListResponse(
+                admins,
+                pageInfo
+        );
     }
 }

@@ -1,8 +1,11 @@
 package com.example.commercepjt.admin.controller;
 
 import com.example.commercepjt.admin.dto.*;
+import com.example.commercepjt.admin.entity.AdminRole;
+import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +15,15 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+
+    // 내 프로필 조회
+    @GetMapping("/me")
+    public ResponseEntity<ProfileResponse> getMyProfile() {
+
+        return ResponseEntity.ok(
+                adminService.getMyProfile()
+        );
+    }
 
     // 관리자 상세 조회
     @GetMapping("/{id}")
@@ -95,5 +107,29 @@ public class AdminController {
 
         return ResponseEntity.noContent().build();
     }
-    // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
+
+    // 관리자 리스트 조회
+    @GetMapping
+    public ResponseEntity<AdminListResponse> getAdmins(
+
+            @RequestParam(required = false) String keyword,
+
+            @RequestParam(required = false) AdminRole role,
+
+            @RequestParam(required = false) AdminStatus status,
+
+            Pageable pageable
+
+    ) {
+
+        return ResponseEntity.ok(
+                adminService.getAdmins(
+                        keyword,
+                        role,
+                        status,
+                        pageable
+                )
+        );
+
+    }
 }
