@@ -105,6 +105,12 @@ public class ProductService {
     }
 
 
+    public void deleteProduct(Long productId) {
+        Product product = findProduct(productId);
+
+        productRepository.delete(product);
+    }
+
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
                 product.getId(),
