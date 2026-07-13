@@ -1,13 +1,16 @@
 package com.example.commercepjt.auth.service;
 
 import com.example.commercepjt.admin.entity.Admin;
+import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.auth.dto.LoginAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminResponse;
-import com.example.commercepjt.auth.exception.CustomException;
-import com.example.commercepjt.auth.exception.ErrorCode;
 import com.example.commercepjt.common.config.PasswordEncoder;
+import com.example.commercepjt.common.exception.DuplicateException;
+import com.example.commercepjt.common.exception.ForbiddenException;
+import com.example.commercepjt.common.exception.NotFoundException;
+import com.example.commercepjt.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,16 +60,16 @@ public class AuthService {
     ) {
         // 이메일로 관리자 조회
         Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new CustomException(ErrorCode.ADMIN_NOT_FOUND)
-                );
+                .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
         // 입력 비밀번호와 암호화된 비밀번호 비교
-        if (!passwordEncoder.matches(
-                request.getPassword(),
-                admin.getPassword()
-        )) {
-            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        if (!passwordEncoder.matches(request.getPassword(),admin.getPassword())) {
+            throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 접근 불가능한 상태 확인
+        if (admin.getStatus() == AdminStatus.SUSPENDED) {
+            throw new ForbiddenException("정지된 계정입니다.");
         }
 
         // 로그인 성공 시 세션에 관리자 정보 저장
@@ -81,7 +84,7 @@ public class AuthService {
 
         // 이미 존재하는 이메일이면 예외 발생
         if (adminRepository.existsByEmail(email)) {
-            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+            throw new DuplicateException("이미 사용 중인 이메일 입니다.");
         }
     }
 
