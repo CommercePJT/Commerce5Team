@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -47,20 +50,38 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    // ===== TODO(담당: 6번 주문 정보 관리) =====
-
-    /** 주문 생성 - 주문번호 생성, 총액 계산(가격 x 수량), 초기 상태 PREPARING */
+//주문생성
     public static Order create(Customer customer, Product product, int quantity, Admin admin) {
-        return null; // TODO(담당: 6번)
+        Order order = new Order();
+        order.orderNumber = generateOrderNumber();
+        order.quantity = quantity;
+        order.totalPrice = product.getPrice() * quantity;  // 주문 당시 가격 기준
+        order.status = OrderStatus.PREPARING;
+        order.customer = customer;
+        order.product = product;
+        order.admin = admin;
+        return order;
     }
 
-    /** 상태 변경 - canTransitionTo()로 순서 검증 후 변경, 위반 시 IllegalArgumentException */
+    private static String generateOrderNumber() {
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String random = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return "ORD-" + date + "-" + random;
+    }
+//주문상태변경
     public void updateStatus(OrderStatus next) {
-        // TODO(담당: 6번)
+        if (!this.status.canTransitionTo(next)) {
+            throw new IllegalArgumentException(
+                    "주문 상태를 " + this.status + "에서 " + next + "(으)로 변경할 수 없습니다");
+        }
+        this.status = next;
     }
-
-    /** 주문 취소 - PREPARING만 취소 가능, 상태 CANCELED + 사유 저장 */
+//주문취소
     public void cancel(String reason) {
-        // TODO(담당: 6번)
+        if (this.status != OrderStatus.PREPARING) {
+            throw new IllegalArgumentException("준비중 상태의 주문만 취소할 수 있습니다");
+        }
+        this.status = OrderStatus.CANCELED;
+        this.cancelReason = reason;
     }
 }
