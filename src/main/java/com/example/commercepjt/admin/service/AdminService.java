@@ -6,8 +6,11 @@ import com.example.commercepjt.auth.dto.RejectAdminRequest;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.NotFoundException;
 import jakarta.transaction.Transactional;
+import com.example.commercepjt.common.exception.DuplicateException;   // ← BusinessException/ErrorCode 대신
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,4 +33,10 @@ public class AdminService {
         admin.reject(request.getRejectReason());
     }
 
+    // 이메일 중복 검사
+    private void validateDuplicateEmail(String email) {
+        if (adminRepository.existsByEmail(email)) {
+            throw new DuplicateException("이미 사용 중인 이메일입니다.");   // ← 메시지 방식
+        }
+    }
 }

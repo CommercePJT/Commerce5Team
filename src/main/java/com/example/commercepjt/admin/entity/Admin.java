@@ -1,5 +1,6 @@
 package com.example.commercepjt.admin.entity;
 
+
 import com.example.commercepjt.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -83,14 +84,5 @@ public class Admin extends BaseEntity {
         // 회원가입 직후 무조건 승인 대기 상태로
         this.status = AdminStatus.PENDING;
     }
-
-    public Admin(String name, String email, String phone, String password) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
-    }
-
-
 
 }
