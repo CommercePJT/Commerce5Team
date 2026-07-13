@@ -1,6 +1,8 @@
 package com.example.commercepjt.customer.service;
 
 import com.example.commercepjt.common.dto.PageInfo;
+import com.example.commercepjt.common.exception.DuplicateException;
+import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.customer.dto.CustomerListResponse;
 import com.example.commercepjt.customer.dto.CustomerResponse;
 import com.example.commercepjt.customer.dto.UpdateCustomerRequest;
@@ -74,6 +76,20 @@ public class CustomerService {
     @Transactional
     public CustomerResponse update(Long customerId, UpdateCustomerRequest request) {
         Customer customer = customerOrElseThrow(customerId);
+
+        boolean duplicatedEmail =
+                customerRepository.existsByEmailAndCustomerIdNot(
+                        request.getEmail(),
+                        customerId
+                );
+
+        // 변경: 중복 이메일이면 409 Conflict 예외 발생
+        if (duplicatedEmail) {
+            throw new DuplicateException(
+                    "이미 사용 중인 이메일입니다."
+            );
+        }
+
         customer.update(request.getName(),
                 request.getEmail(),
                 request.getPhone());
@@ -100,7 +116,7 @@ public class CustomerService {
     private Customer customerOrElseThrow(Long customerId) {
         return customerRepository.findById(customerId)
                 .orElseThrow(
-                        () -> new IllegalStateException("고객이 존재하지 않습니다.")
+                        () -> new NotFoundException("고객이 존재하지 않습니다.")
                 );
     }
 }
