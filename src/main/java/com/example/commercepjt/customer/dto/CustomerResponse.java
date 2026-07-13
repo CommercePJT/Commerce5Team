@@ -1,5 +1,7 @@
 package com.example.commercepjt.customer.dto;
 
+import com.example.commercepjt.customer.entity.Customer;
+import com.example.commercepjt.customer.entity.CustomerStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,11 +12,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CustomerResponse {
 
-    private Long id;
-    private String name;
-    private String email;
-    private String phone;
-    private String status;
-    private LocalDateTime createdAt;
+    private final Long customerId;
+    private final String name;
+    private final String email;
+    private final String phone;
+    private final CustomerStatus status;
+    private final LocalDateTime createdAt;
 
+    public CustomerResponse(Customer customer) {
+        this.customerId = customer.getCustomerId();
+        this.name = customer.getName();
+        this.email = customer.getEmail();
+        this.phone = customer.getPhone();
+        this.status = customer.getStatus();
+        this.createdAt = customer.getCreatedAt();
+    }
 }
