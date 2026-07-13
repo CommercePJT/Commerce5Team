@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,11 +43,78 @@ public class ProductService {
         return toProductResponse(savedProduct);
     }
 
+    @Transactional(readOnly = true)
+    public ProductDetailResponse getProduct(Long productId) {
+        Product product = findProduct(productId);
+
+        return new ProductDetailResponse(
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().name(),
+                product.getCreatedAt(),
+                product.getAdmin().getName(),
+                product.getAdmin().getEmail()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(this::toProductResponse)
+                .toList();
+    }
+
+    public ProductResponse updateProduct(
+            Long productId,
+            UpdateProductRequest request
+    ) {
+        Product product = findProduct(productId);
+
+        product.update(
+                request.getName(),
+                request.getCategory(),
+                request.getPrice()
+        );
+
+        return toProductResponse(product);
+    }
+
+    public ProductResponse updateStock(
+            Long productId,
+            UpdateStockRequest request
+    ) {
+        Product product = findProduct(productId);
+
+        product.changeStock(request.getStock());
+
+        return toProductResponse(product);
+    }
+
+    public ProductResponse updateStatus(
+            Long productId,
+            UpdateProductStatusRequest request
+    ) {
+        Product product = findProduct(productId);
+
+        product.changeStatus(request.getStatus());
+
+        return toProductResponse(product);
+    }
+
+
+    public void deleteProduct(Long productId) {
+        Product product = findProduct(productId);
+
+        productRepository.delete(product);
+    }
 
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
-                product.getId(),
-                product.getProductName(),
+                product.getProductId(),
+                product.getName(),
                 product.getCategory(),
                 product.getPrice(),
                 product.getStock(),
@@ -53,5 +122,10 @@ public class ProductService {
                 product.getCreatedAt(),
                 product.getAdmin().getName()
         );
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
     }
 }
