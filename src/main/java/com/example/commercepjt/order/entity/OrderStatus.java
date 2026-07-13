@@ -9,6 +9,8 @@ public enum OrderStatus {
      * 허용: PREPARING -> SHIPPING, SHIPPING -> DELIVERED
      */
     public boolean canTransitionTo(OrderStatus next) {
+        if (this == PREPARING && next == SHIPPING) return true;
+        if (this == SHIPPING && next == DELIVERED) return true;
         return false;
     }
 }
