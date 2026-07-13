@@ -4,6 +4,7 @@ import com.example.commercepjt.common.exception.UnauthorizedException;
 import com.example.commercepjt.product.dto.*;
 import com.example.commercepjt.product.entity.ProductStatus;
 import com.example.commercepjt.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
-            @RequestBody CreateProductRequest request
+            @Valid @RequestBody CreateProductRequest request
     ) {
         checkLogin(adminId);
         return ResponseEntity
@@ -57,7 +58,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> updateProduct(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
-            @RequestBody UpdateProductRequest request
+            @Valid @RequestBody UpdateProductRequest request
     ) {
         checkLogin(adminId);
         return ResponseEntity.ok(
@@ -69,7 +70,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> updateStock(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
-            @RequestBody UpdateStockRequest request
+            @Valid @RequestBody UpdateStockRequest request
     ) {
         checkLogin(adminId);
         return ResponseEntity.ok(
@@ -81,7 +82,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> updateStatus(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
-            @RequestBody UpdateProductStatusRequest request
+            @Valid @RequestBody UpdateProductStatusRequest request
     ) {
         checkLogin(adminId);
         return ResponseEntity.ok(
