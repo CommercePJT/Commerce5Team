@@ -1,9 +1,6 @@
 package com.example.commercepjt.product.controller;
 
-import com.example.commercepjt.product.dto.CreateProductRequest;
-import com.example.commercepjt.product.dto.ProductDetailResponse;
-import com.example.commercepjt.product.dto.ProductResponse;
-import com.example.commercepjt.product.dto.UpdateProductRequest;
+import com.example.commercepjt.product.dto.*;
 import com.example.commercepjt.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,6 +47,18 @@ public class ProductController {
                 productService.updateProduct(productId, request)
         );
     }
+
+    @PatchMapping("/{productId}/stock")
+    public ResponseEntity<ProductResponse> updateStock(
+            @PathVariable Long productId,
+            @RequestBody UpdateStockRequest request
+    ) {
+        return ResponseEntity.ok(
+                productService.updateStock(productId, request)
+        );
+    }
+
+
 
 
 }

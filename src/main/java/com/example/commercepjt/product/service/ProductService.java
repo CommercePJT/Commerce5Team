@@ -82,6 +82,17 @@ public class ProductService {
         return toProductResponse(product);
     }
 
+    public ProductResponse updateStock(
+            Long productId,
+            UpdateStockRequest request
+    ) {
+        Product product = findProduct(productId);
+
+        product.changeStock(request.getStock());
+
+        return toProductResponse(product);
+    }
+
 
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
