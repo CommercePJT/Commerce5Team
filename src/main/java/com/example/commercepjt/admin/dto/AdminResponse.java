@@ -1,5 +1,6 @@
 package com.example.commercepjt.admin.dto;
 
+import com.example.commercepjt.admin.entity.Admin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,4 +20,14 @@ public class AdminResponse {
     private LocalDateTime createdAt;
     private LocalDateTime approvedAt;
 
+    public AdminResponse(Admin admin) {
+        this.id = admin.getAdminId();
+        this.name = admin.getName();
+        this.email = admin.getEmail();
+        this.phone = admin.getPhone();
+        this.role = admin.getRole().name();
+        this.status = admin.getStatus().name();
+        this.createdAt = admin.getCreatedAt();
+        this.approvedAt = admin.getApprovedAt();
+    }
 }
