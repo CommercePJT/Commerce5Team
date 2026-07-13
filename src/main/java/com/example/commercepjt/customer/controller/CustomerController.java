@@ -31,8 +31,11 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<CustomerListResponse> findAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(customerService.findAll(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        return ResponseEntity.ok(customerService.findAll(
+                page, size, sortBy, sortDir));
     }
 
     // 고객 정보 수정

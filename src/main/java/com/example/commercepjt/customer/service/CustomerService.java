@@ -13,6 +13,7 @@ import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +35,19 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public CustomerListResponse findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public CustomerListResponse findAll(
+            int page, int size, String sortBy, String sortDir) {
+
+        Sort sort;
+        // 사용자가 요청한 정렬 방향에 따라 오름차순 또는 내림차순 설정
+        if (sortDir.equalsIgnoreCase("asc")) {
+            sort = Sort.by(sortBy).ascending();
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageable = PageRequest.of(
+                page - 1, size, sort);
 
         List<CustomerResponse> responseList = new ArrayList<>();
 
