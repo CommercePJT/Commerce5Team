@@ -15,29 +15,107 @@ public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    // 상품명
+    @Column(name = "product_name", nullable = false, length = 100)
+    private String productName;
 
-    @Column(nullable = false)
+    // 카테고리
+    @Column(name = "category", nullable = false)
     private String category;
 
-    @Column(nullable = false)
+    // 가격
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(nullable = false)
+    // 재고
+    @Column(name = "stock", nullable = false)
     private int stock;
 
+
+    // 상품 상태
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductStatus status;
 
-    /** 등록 관리자 */
+    // 등록 관리자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
     // ⚠️ 메서드명은 decreaseStock(int) / increaseStock(int)으로 통일
+    public Product(
+            String productName,
+            String category,
+            int price,
+            int stock,
+            ProductStatus status,
+            Admin admin
+    ) {
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+        this.status = status;
+        this.admin = admin;
+    }
 
+    public void update(String name, String category, int price) {
+        this.productName = name;
+        this.category = category;
+        this.price = price;
+    }
+
+    public void changeStock(int stock) {
+        if (stock < 0) {
+            throw new IllegalArgumentException("재고는 0개 이상이어야 합니다.");
+        }
+        this.stock = stock;
+        updateStatusByStock();
+    }
+
+    // 상품 상태 수동 변경 (예: 단종 처리)
+    public void changeStatus(ProductStatus status) {
+        this.status = status;
+    }
+
+    public void decreaseStock(int quantity) {
+        validateQuantity(quantity);
+
+        if (this.status == ProductStatus.DISCONTINUED) {
+            throw new IllegalStateException("판매할 수 없는 상품입니다.");
+        }
+
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+
+        this.stock -= quantity;
+        updateStatusByStock();
+    }
+
+    public void increaseStock(int quantity) {
+        validateQuantity(quantity);
+
+        this.stock += quantity;
+        updateStatusByStock();
+    }
+
+    private void validateQuantity(int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }
+    }
+
+    // 단종·삭제 상품은 재고가 바뀌어도 상태를 유지한다.
+    private void updateStatusByStock() {
+        if (this.status == ProductStatus.DISCONTINUED) {
+            return;
+        }
+
+        this.status = (this.stock == 0)
+                ? ProductStatus.SOLD_OUT
+                : ProductStatus.ON_SALE;
+    }
 }

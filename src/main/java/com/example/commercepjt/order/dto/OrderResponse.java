@@ -1,5 +1,6 @@
 package com.example.commercepjt.order.dto;
 
+import com.example.commercepjt.order.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,5 +20,17 @@ public class OrderResponse {
     private LocalDateTime orderedAt;
     private String status;
     private String adminName;
-
+    public static OrderResponse from(Order order) {
+        return new OrderResponse(
+                order.getOrderId(),
+                order.getOrderNumber(),
+                order.getCustomer().getName(),
+                order.getProduct().getProductName(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getCreatedAt(),
+                order.getStatus().name(),
+                order.getAdmin() != null ? order.getAdmin().getName() : null
+        );
+    }
 }
