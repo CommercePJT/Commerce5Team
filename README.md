@@ -1,4 +1,4 @@
-# 🛒 CommercePJT — 이커머스 어드민 백엔드
+<img width="1536" height="1024" alt="erd" src="https://github.com/user-attachments/assets/8f3502de-24a1-4d4a-8534-f0c690d96fc9" /># 🛒 CommercePJT — 이커머스 어드민 백엔드
 
 이커머스 플랫폼의 **관리자(Admin) 시스템 백엔드**입니다.
 관리자 계정 관리부터 고객·상품·주문 관리까지, 이커머스 운영에 필요한 핵심 어드민 기능을 REST API로 제공합니다.
@@ -73,7 +73,7 @@
 
 ## 🗂 ERD
 
-![ERD](./docs/CommercePJT_ERD.png)
+![ERD]<img width="1536" height="1024" alt="erd" src="https://github.com/user-attachments/assets/8b3b5abd-9002-4c0c-8fb8-08e89a55eb31" />
 
 - 모든 관계는 **1:N** (FK는 자식 테이블에 위치)
 - `orders.admin_id`는 **nullable** — 고객 직접 주문 시 등록 관리자 없음
