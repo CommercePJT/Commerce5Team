@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class Admin extends BaseEntity {
 
     // 관리자 고유 식별자
@@ -39,7 +40,7 @@ public class Admin extends BaseEntity {
     private String phone;
 
     // 슈퍼 관리자, 운영 관리자, CS 관리자
-    @Enumerated(EnumType.STRING)                   // Enum.Type.String-> DB에 의미가 그대로 저장됌.
+    @Enumerated(EnumType.STRING)    // Enum.Type.String-> DB에 의미가 그대로 저장됌.
     @Column(nullable = false)
     private AdminRole role;
 
@@ -58,8 +59,15 @@ public class Admin extends BaseEntity {
     @Column
     private String rejectReason;
 
+    // 관리자 신청 거부 처리
+    public void reject(String rejectionReason) {
+        this.status = AdminStatus.REJECTED;
+        this.rejectedAt = LocalDateTime.now();
+        this.rejectReason = rejectReason;
+    }
+
     // 관리자 회원가입에 사용하는 생성자
-    @Builder                                       // @Builder -> 어떤 값이 어떤 자리에 들어가는지 이름 보면서 만들 수 있게 해줌
+    @Builder    // @Builder -> 어떤 값이 어떤 자리에 들어가는지 이름 보면서 만들 수 있게 해줌
     public Admin(
             String name,
             String email,
@@ -76,5 +84,14 @@ public class Admin extends BaseEntity {
         // 회원가입 직후 무조건 승인 대기 상태로
         this.status = AdminStatus.PENDING;
     }
+
+    public Admin(String name, String email, String phone, String password) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+    }
+
+
 
 }

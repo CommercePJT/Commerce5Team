@@ -1,15 +1,13 @@
 package com.example.commercepjt.admin.service;
 
-import com.example.commercepjt.admin.dto.request.SignupRequest;
-import com.example.commercepjt.admin.dto.response.SignupResponse;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.auth.dto.RejectAdminRequest;
 import com.example.commercepjt.common.config.PasswordEncoder;
-import com.example.commercepjt.common.exception.DuplicateException;   // ← BusinessException/ErrorCode 대신
-
+import com.example.commercepjt.common.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,36 +16,18 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 관리자 회원가입
+    // 관리자 신청 거부
     @Transactional
-    public SignupResponse signup(SignupRequest request) {
+    public void rejectAdmin(
+            Long adminId,
+            RejectAdminRequest request
+    ) {
+        // 관리자 조회
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
-        // 1. 이미 가입된 이메일인지 확인
-        validateDuplicateEmail(request.getEmail());
-
-        // 2. 원본 비밀번호를 암호화
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-        // 3. 관리자(Admin) 객체 생성 (status는 빌더에서 PENDING)
-        Admin admin = Admin.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(encodedPassword)
-                .phone(request.getPhone())
-                .role(request.getRole())
-                .build();
-
-        // 4. DB에 저장
-        Admin savedAdmin = adminRepository.save(admin);
-
-        // 5. Entity → Response DTO 변환하여 반환
-        return SignupResponse.from(savedAdmin);
+        // 엔티티 메서드를 통해 거부 처리
+        admin.reject(request.getRejectReason());
     }
 
-    // 이메일 중복 검사
-    private void validateDuplicateEmail(String email) {
-        if (adminRepository.existsByEmail(email)) {
-            throw new DuplicateException("이미 사용 중인 이메일입니다.");   // ← 메시지 방식
-        }
-    }
 }
