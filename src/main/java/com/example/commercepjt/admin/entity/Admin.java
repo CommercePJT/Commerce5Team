@@ -58,6 +58,13 @@ public class Admin extends BaseEntity {
     @Column
     private String rejectReason;
 
+    // 관리자 신청 거부 처리
+    public void reject(String rejectionReason) {
+        this.status = AdminStatus.REJECTED;
+        this.rejectedAt = LocalDateTime.now();
+        this.rejectReason = rejectReason;
+    }
+
     // 관리자 회원가입에 사용하는 생성자
     @Builder    // @Builder -> 어떤 값이 어떤 자리에 들어가는지 이름 보면서 만들 수 있게 해줌
     public Admin(
@@ -83,4 +90,7 @@ public class Admin extends BaseEntity {
         this.phone = phone;
         this.password = password;
     }
+
+
+
 }
