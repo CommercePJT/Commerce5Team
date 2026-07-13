@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -40,6 +42,7 @@ public class ProductService {
 
         return toProductResponse(savedProduct);
     }
+
     @Transactional(readOnly = true)
     public ProductDetailResponse getProduct(Long productId) {
         Product product = findProduct(productId);
@@ -55,6 +58,15 @@ public class ProductService {
                 product.getAdmin().getEmail()
         );
     }
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(this::toProductResponse)
+                .toList();
+    }
+
+
 
 
     private ProductResponse toProductResponse(Product product) {
@@ -69,6 +81,7 @@ public class ProductService {
                 product.getAdmin().getName()
         );
     }
+
     private Product findProduct(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
