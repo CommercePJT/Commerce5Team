@@ -1,9 +1,6 @@
 package com.example.commercepjt.admin.service;
 
-import com.example.commercepjt.admin.dto.AdminResponse;
-import com.example.commercepjt.admin.dto.UpdateAdminRequest;
-import com.example.commercepjt.admin.dto.UpdateRoleRequest;
-import com.example.commercepjt.admin.dto.UpdateRoleResponse;
+import com.example.commercepjt.admin.dto.*;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.config.PasswordEncoder;
@@ -73,5 +70,24 @@ public class AdminService {
         // 3. 변경된 역할 반환
         return new UpdateRoleResponse(admin.getRole());
 
+    }
+
+    @Transactional
+    // 관리자 상태 변경
+    public UpdateStatusResponse updateStatus(Long id, UpdateAdminStatusRequest request) {
+
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+
+        // 2. 상태 변경
+        admin.changeStatus(request.getStatus());
+
+
+        // 3. 변경된 상태 반환
+        return new UpdateStatusResponse(admin.getStatus());
     }
 }
