@@ -40,6 +40,21 @@ public class ProductService {
 
         return toProductResponse(savedProduct);
     }
+    @Transactional(readOnly = true)
+    public ProductDetailResponse getProduct(Long productId) {
+        Product product = findProduct(productId);
+
+        return new ProductDetailResponse(
+                product.getProductName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().name(),
+                product.getCreatedAt(),
+                product.getAdmin().getName(),
+                product.getAdmin().getEmail()
+        );
+    }
 
 
     private ProductResponse toProductResponse(Product product) {
@@ -53,5 +68,9 @@ public class ProductService {
                 product.getCreatedAt(),
                 product.getAdmin().getName()
         );
+    }
+    private Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
     }
 }
