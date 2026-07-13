@@ -1,10 +1,12 @@
-package com.example.commercepjt.admin.dto;
+package com.example.commercepjt.auth.dto;
 
 import lombok.Getter;
 
 @Getter
-public class LoginRequest {
+
+public class LoginAdminRequest {
 
     private String email;
     private String password;
+
 }
