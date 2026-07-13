@@ -3,6 +3,7 @@ package com.example.commercepjt.product.entity;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,7 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
-    // ⚠️ 메서드명은 decreaseStock(int) / increaseStock(int)으로 통일
+    public void decreaseStock(int quantity) {
+    }
 
 }
