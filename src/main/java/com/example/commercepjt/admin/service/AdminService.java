@@ -2,6 +2,7 @@ package com.example.commercepjt.admin.service;
 
 import com.example.commercepjt.admin.dto.*;
 import com.example.commercepjt.admin.entity.Admin;
+import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.NotFoundException;
@@ -89,5 +90,34 @@ public class AdminService {
 
         // 3. 변경된 상태 반환
         return new UpdateStatusResponse(admin.getStatus());
+    }
+
+    // 관리자 승인
+    public ApproveResponse approveAdmin(Long id) {
+
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+
+        // 2. 승인 상태 확인
+        if (admin.getStatus() != AdminStatus.PENDING) {
+            throw new IllegalArgumentException(
+                    "승인 대기 상태의 관리자만 승인할 수 있습니다."
+            );
+        }
+
+
+        // 3. 승인 처리
+        admin.approve();
+
+
+        // 4. 응답 반환
+        return new ApproveResponse(
+                admin.getStatus(),
+                admin.getApprovedAt()
+        );
     }
 }

@@ -61,5 +61,16 @@ public class AdminController {
                 adminService.updateStatus(id, request)
         );
     }
+
+    // 관리자 승인
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<ApproveResponse> approveAdmin(
+            @PathVariable Long id
+    ) {
+
+        return ResponseEntity.ok(
+                adminService.approveAdmin(id)
+        );
+    }
 }
     // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
