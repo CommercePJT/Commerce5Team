@@ -6,10 +6,10 @@ import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.auth.dto.LoginAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminResponse;
+import com.example.commercepjt.auth.session.SessionConst;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.ForbiddenException;
-import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -54,13 +54,11 @@ public class AuthService {
     }
 
     // 로그인
-    public void login(
-            LoginAdminRequest request,
-            HttpSession session
-    ) {
+    public void login(LoginAdminRequest request, HttpSession session) {
+
         // 이메일로 관리자 조회
         Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword())) {
@@ -73,9 +71,9 @@ public class AuthService {
         }
 
         // 로그인 성공 시 세션에 관리자 정보 저장
-        session.setAttribute("ADMIN_ID", admin.getId());
-        session.setAttribute("ADMIN_EMAIL", admin.getEmail());
-        session.setAttribute("ADMIN_ROLE", admin.getRole());
+        session.setAttribute(SessionConst.Admin_ID, admin.getId());
+        session.setAttribute(SessionConst.Admin_EMAIL, admin.getEmail());
+        session.setAttribute(SessionConst.Admin_ROLE, admin.getRole());
     }
 
 
