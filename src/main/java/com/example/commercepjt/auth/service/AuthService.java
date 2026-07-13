@@ -1,4 +1,4 @@
-package com.example.commercepjt.admin.service;
+package com.example.commercepjt.auth.service;
 
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.config.PasswordEncoder;
