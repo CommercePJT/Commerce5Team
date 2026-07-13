@@ -92,6 +92,7 @@ public class AdminService {
         return new UpdateStatusResponse(admin.getStatus());
     }
 
+    @Transactional
     // 관리자 승인
     public ApproveResponse approveAdmin(Long id) {
 
@@ -118,6 +119,47 @@ public class AdminService {
         return new ApproveResponse(
                 admin.getStatus(),
                 admin.getApprovedAt()
+        );
+    }
+
+    @Transactional
+    // 관리자 거부
+    public RejectResponse rejectAdmin(Long id, RejectRequest request) {
+
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+
+        // 2. 승인 대기 상태 확인
+        if (admin.getStatus() != AdminStatus.PENDING) {
+            throw new IllegalArgumentException(
+                    "승인 대기 상태의 관리자만 거부할 수 있습니다."
+            );
+        }
+
+
+        // 3. 거부 사유 확인
+        if (request.getRejectReason() == null
+                || request.getRejectReason().isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "거부 사유는 필수입니다."
+            );
+        }
+
+
+        // 4. 거부 처리
+        admin.reject(request.getRejectReason());
+
+
+        // 5. 응답 반환
+        return new RejectResponse(
+                admin.getStatus(),
+                admin.getRejectedAt(),
+                admin.getRejectReason()
         );
     }
 }

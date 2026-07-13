@@ -72,5 +72,17 @@ public class AdminController {
                 adminService.approveAdmin(id)
         );
     }
-}
+
+    // 관리자 거부
+    @PatchMapping("/{id}/reject")
+    public ResponseEntity<RejectResponse> rejectAdmin(
+            @PathVariable Long id,
+            @RequestBody RejectRequest request
+    ) {
+
+        return ResponseEntity.ok(
+                adminService.rejectAdmin(id, request)
+        );
+    }
     // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
+}
