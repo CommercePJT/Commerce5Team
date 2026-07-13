@@ -25,7 +25,7 @@ public class OrderResponse {
                 order.getOrderId(),
                 order.getOrderNumber(),
                 order.getCustomer().getName(),
-                order.getProduct().getName(),
+                order.getProduct().getProductName(),
                 order.getQuantity(),
                 order.getTotalPrice(),
                 order.getCreatedAt(),
