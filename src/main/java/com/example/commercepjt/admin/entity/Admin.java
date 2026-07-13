@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Admin extends BaseEntity {
 
     // 관리자 고유 식별자
@@ -48,25 +47,17 @@ public class Admin extends BaseEntity {
     @Column(nullable = false)
     private AdminStatus status;
 
-    // 관리자가 승인된 날짜
+    // 승인된 시간
     private LocalDateTime approvedAt;
 
-    // 관리자가 가입 신청이 거부된 날짜
+    // 거부된 시간
     private LocalDateTime rejectedAt;
 
-    // 관리자 가입 신청 거부 사유
-    @Column
+    // 거부 사유
     private String rejectReason;
 
-    // 관리자 신청 거부 처리
-    public void reject(String rejectionReason) {
-        this.status = AdminStatus.REJECTED;
-        this.rejectedAt = LocalDateTime.now();
-        this.rejectReason = rejectReason;
-    }
-
-    // 관리자 회원가입에 사용하는 생성자
-    @Builder    // @Builder -> 어떤 값이 어떤 자리에 들어가는지 이름 보면서 만들 수 있게 해줌
+    // 회원가입 시 관리자 생성
+    @Builder
     public Admin(
             String name,
             String email,
@@ -84,13 +75,40 @@ public class Admin extends BaseEntity {
         this.status = AdminStatus.PENDING;
     }
 
-    public Admin(String name, String email, String phone, String password) {
+    // 관리자 정보 수정
+    public void update(String name, String email, String phone) {
         this.name = name;
         this.email = email;
         this.phone = phone;
+    }
+
+    // 관리자 역할 변경
+    public void changeRole(AdminRole role) {
+        this.role = role;
+    }
+
+    // 관리자 상태 변경
+    public void changeStatus(AdminStatus status) {
+        this.status = status;
+    }
+
+    // 관리자 승인
+    public void approve() {
+        this.status = AdminStatus.ACTIVE;
+        this.approvedAt = LocalDateTime.now();
+    }
+
+    // 관리자 가입 거부
+    public void reject(String rejectReason) {
+        this.status = AdminStatus.REJECTED;
+        this.rejectedAt = LocalDateTime.now();
+        this.rejectReason = rejectReason;
+    }
+
+    // 비밀번호 변경
+    public void changePassword(String password) {
         this.password = password;
     }
 
-
-
 }
+
