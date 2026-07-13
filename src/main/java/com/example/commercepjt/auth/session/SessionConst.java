@@ -6,7 +6,7 @@ public class SessionConst {
     private SessionConst() {
     }
 
-    public static final String Admin_ID = "ADMIN_ID";
-    public static final String Admin_EMAIL = "ADMIN_EMAIL";
-    public static final String Admin_ROLE = "ADMIN_ROLE";
+    public static final String Admin_ID = "adminId";
+    public static final String Admin_EMAIL = "adminEmail";
+    public static final String Admin_ROLE = "adminRole";
 }

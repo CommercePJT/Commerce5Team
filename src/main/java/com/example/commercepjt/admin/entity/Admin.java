@@ -1,6 +1,5 @@
 package com.example.commercepjt.admin.entity;
 
-
 import com.example.commercepjt.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
