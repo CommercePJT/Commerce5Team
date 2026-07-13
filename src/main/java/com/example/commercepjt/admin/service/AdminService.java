@@ -2,20 +2,26 @@ package com.example.commercepjt.admin.service;
 
 import com.example.commercepjt.admin.dto.AdminResponse;
 import com.example.commercepjt.admin.dto.UpdateAdminRequest;
+import com.example.commercepjt.admin.dto.UpdateRoleRequest;
+import com.example.commercepjt.admin.dto.UpdateRoleResponse;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminService {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
+    //관리자 상세 조회
     public AdminResponse getAdmin(Long id) {
 
         Admin admin = adminRepository.findById(id)
@@ -26,6 +32,8 @@ public class AdminService {
 
     }
 
+    @Transactional
+    // 관리자 정보 수정
     public AdminResponse updateAdmin(Long id, UpdateAdminRequest request) {
 
         // 1. 수정할 관리자 조회
@@ -47,5 +55,23 @@ public class AdminService {
         return new AdminResponse(admin);
     }
 
-}
+    @Transactional
+    // 관리자 역할 변경
+    public UpdateRoleResponse updateRole(Long id, UpdateRoleRequest request) {
 
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+
+        // 2. 역할 변경
+        admin.changeRole(request.getRole());
+
+
+        // 3. 변경된 역할 반환
+        return new UpdateRoleResponse(admin.getRole());
+
+    }
+}

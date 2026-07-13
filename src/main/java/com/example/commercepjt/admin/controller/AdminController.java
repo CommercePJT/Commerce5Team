@@ -2,6 +2,8 @@ package com.example.commercepjt.admin.controller;
 
 import com.example.commercepjt.admin.dto.AdminResponse;
 import com.example.commercepjt.admin.dto.UpdateAdminRequest;
+import com.example.commercepjt.admin.dto.UpdateRoleRequest;
+import com.example.commercepjt.admin.dto.UpdateRoleResponse;
 import com.example.commercepjt.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +38,19 @@ public class AdminController {
         return ResponseEntity.ok(
                 adminService.updateAdmin(id, request)
         );
-
     }
 
+    // 관리자 역할 변경
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<UpdateRoleResponse> updateRole(
+            @PathVariable Long id,
+            @RequestBody UpdateRoleRequest request
+    ) {
 
-    // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
+        return ResponseEntity.ok(
+                adminService.updateRole(id, request)
+        );
+
+    }
 }
+    // ⚠️ /me 매핑은 /{adminId}보다 위에 선언할 것 (경로 충돌 방지)
