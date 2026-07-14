@@ -84,13 +84,15 @@ public class Product extends BaseEntity {
         validateQuantity(quantity);
 
         if (this.status == ProductStatus.DISCONTINUED) {
-            throw new IllegalStateException("판매할 수 없는 상품입니다.");
+            throw new IllegalStateException("단종된 상품입니다.");
         }
+        if (this.status == ProductStatus.SOLD_OUT) {
+            throw new IllegalStateException("품절된 상품입니다.");
 
+        }
         if (this.stock < quantity) {
             throw new IllegalArgumentException("재고가 부족합니다.");
         }
-
         this.stock -= quantity;
         updateStatusByStock();
     }
