@@ -144,4 +144,17 @@ public class AdminController {
         );
 
     }
+    // 내 프로필 수정
+    @PatchMapping("/me")
+    public ResponseEntity<ProfileResponse> updateMyProfile(
+            @RequestBody UpdateAdminRequest request,
+            HttpSession session
+    ) {
+
+        Long adminId = (Long) session.getAttribute("adminId");
+
+        return ResponseEntity.ok(
+                adminService.updateMyProfile(adminId, request)
+        );
+    }
 }

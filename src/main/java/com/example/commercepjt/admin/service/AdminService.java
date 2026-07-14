@@ -250,4 +250,31 @@ public class AdminService {
                 pageInfo
         );
     }
+
+    @Transactional
+    public ProfileResponse updateMyProfile(
+            Long adminId,
+            UpdateAdminRequest request
+    ) {
+
+        // 1. 로그인한 관리자 조회
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+        // 2. 정보 수정
+        admin.update(
+                request.getName(),
+                request.getEmail(),
+                request.getPhone()
+        );
+
+        // 3. 응답 반환
+        return new ProfileResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhone()
+        );
+    }
 }
