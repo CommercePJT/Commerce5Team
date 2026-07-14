@@ -4,7 +4,8 @@ import com.example.commercepjt.admin.entity.AdminRole;
 import lombok.Getter;
 
 @Getter
-public class UpdateRoleRequest {
+public class UpdateoleRequest {
+
 
     private AdminRole role;
 }

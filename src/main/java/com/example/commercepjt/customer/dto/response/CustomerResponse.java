@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CustomerResponse {
 
-    private final Long customerId;
+    private final Long id;
     private final String name;
     private final String email;
     private final String phone;
@@ -20,7 +20,7 @@ public class CustomerResponse {
     private final LocalDateTime createdAt;
 
     public CustomerResponse(Customer customer) {
-        this.customerId = customer.getCustomerId();
+        this.id = customer.getCustomerId();
         this.name = customer.getName();
         this.email = customer.getEmail();
         this.phone = customer.getPhone();
