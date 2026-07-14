@@ -1,9 +1,11 @@
 package com.example.commercepjt.auth.controller;
 
+import com.example.commercepjt.auth.dto.LoginAdminInfo;
 import com.example.commercepjt.auth.dto.LoginAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminResponse;
 import com.example.commercepjt.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,26 +32,31 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<Void> login(
-            @Valid @RequestBody LoginAdminRequest request,
-            HttpSession session
-    ) {
-        // 로그인 검증 및 세션 생성
-        authService.login(request, session);
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginAdminRequest request,
+                                      HttpServletRequest servletRequest) {
 
-        // 로그인 성공 시 200 OK 반환
-        return ResponseEntity.ok().build();
+        // 로그인 검증 후 관리자 정보 반환
+        LoginAdminInfo loginAdmin = authService.login(request);
+        // 세션 생성
+        HttpSession session = servletRequest.getSession();
+        // 필요한 정보 세션에 저장
+        session.setAttribute("adminId", loginAdmin.getId());
+        session.setAttribute("adminEmail", loginAdmin.getEmail());
+        session.setAttribute("adminRole", loginAdmin.getRole());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            HttpSession session
-    ) {
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+
+        // 기존 세션 조회
+        HttpSession session = request.getSession(false);
         // 현재 세션 삭제
-        authService.logout(session);
+        if (session != null) session.invalidate();
 
         // 로그아웃 성공 시 204 No Content 반환
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

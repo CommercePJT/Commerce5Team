@@ -3,6 +3,8 @@ package com.example.commercepjt.auth.service;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.admin.service.AdminService;
+import com.example.commercepjt.auth.dto.LoginAdminInfo;
 import com.example.commercepjt.auth.dto.LoginAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminResponse;
@@ -54,29 +56,26 @@ public class AuthService {
     }
 
     // 로그인
-    public void login(LoginAdminRequest request, HttpSession session) {
+    @Transactional(readOnly = true)
+    public LoginAdminInfo login(LoginAdminRequest request) {
 
         // 이메일로 관리자 조회
         Admin admin = adminRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
+        // 로그인 상태 검증
+        validateAdminStatus(admin.getStatus(), admin);
+
+        // 비밀번호 검증
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword()))
             throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
 
-        // 접근 불가능한 상태 확인
-        if (admin.getStatus() == AdminStatus.SUSPENDED)
-            throw new ForbiddenException("정지된 계정입니다.");
-
-        // 계정 상태 확인
-        validateAdminStatus(admin);
-
-        // 로그인 성공 시 세션에 관리자 정보 저장
-        session.setAttribute(SessionConst.Admin_ID, admin.getId());
-        session.setAttribute(SessionConst.Admin_EMAIL, admin.getEmail());
-        session.setAttribute(SessionConst.Admin_ROLE, admin.getRole());
+        return new LoginAdminInfo(
+                admin.getId(),
+                admin.getEmail(),
+                admin.getRole());
     }
-
 
     // 로그아웃
     public void logout(HttpSession session) {
@@ -94,11 +93,13 @@ public class AuthService {
         }
     }
 
+
+
     // 계정 상태에 따른 로그인 실패 분리
     // 로그인 가능한 관리자 상태인지 확인
-    private void validateAdminStatus(Admin admin) {
+    private void validateAdminStatus(AdminStatus status, Admin admin) {
 
-        switch (admin.getStatus()) {
+        switch (status) {
 
             // 정상 계정은 로그인 허용
             case ACTIVE -> {
@@ -119,5 +120,4 @@ public class AuthService {
             case INACTIVE ->throw new ForbiddenException("비활성화된 계정입니다.");
         }
     }
-
 }

@@ -21,7 +21,7 @@ public class AdminResponse {
     private LocalDateTime approvedAt;
 
     public AdminResponse(Admin admin) {
-        this.id = admin.getAdminId();
+        this.id = admin.getId();
         this.name = admin.getName();
         this.email = admin.getEmail();
         this.phone = admin.getPhone();
