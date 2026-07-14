@@ -1,4 +1,4 @@
-package com.example.commercepjt.customer.dto;
+package com.example.commercepjt.customer.dto.response;
 
 import com.example.commercepjt.customer.entity.Customer;
 import com.example.commercepjt.customer.entity.CustomerStatus;

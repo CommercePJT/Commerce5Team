@@ -8,6 +8,7 @@ import com.example.commercepjt.review.dto.response.ReviewResponse;
 import com.example.commercepjt.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class ReviewController {
         @Valid @RequestBody CreateReviewRequest request
     ) {
     return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(request));
-}
+    }
 
     // 리뷰 리스트 조회
     @GetMapping("/reviews")
@@ -41,17 +42,23 @@ public class ReviewController {
         @PathVariable Long id
     ) {
     return ResponseEntity.ok(reviewService.getReview(id));
-}
+    }
 
-//리뷰삭제
-@DeleteMapping("/reviews/{id}")
-public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+    //리뷰삭제
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable Long id
+    ) {
     reviewService.deleteReview(id);
+
     return ResponseEntity.noContent().build();
-}
-//상품별 리뷰 통계 (도전과제)
+    }
+
+    //상품별 리뷰 통계 (도전과제)
     @GetMapping("/products/{id}/reviews")
-    public ResponseEntity<ProductReviewResponse> getProductReviews(@PathVariable Long id) {
+    public ResponseEntity<ProductReviewResponse> getProductReviews(
+            @PathVariable Long id
+    ) {
         return ResponseEntity.ok(reviewService.getProductReviews(id));
     }
-}
+    }

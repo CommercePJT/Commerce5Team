@@ -79,8 +79,8 @@ public class ProductService {
                 .toList();
 
         PageInfo pageInfo = new PageInfo(
-                page,
-                size,
+                productPage.getNumber() + 1,
+                productPage.getSize(),
                 productPage.getTotalElements(),
                 productPage.getTotalPages()
         );

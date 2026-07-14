@@ -10,6 +10,7 @@ import com.example.commercepjt.product.entity.ProductStatus;
 import com.example.commercepjt.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,12 +44,8 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<ProductListResponse> getProducts(
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) ProductStatus status
+                  @RequestParam(required = false) String category,
+            @RequestParam(required = false) ProductStatus status, Pageable pageable
     ) {
         return ResponseEntity.ok(productService.getProducts(keyword, category, status, pageable)
         );
@@ -90,6 +87,7 @@ public class ProductController {
             @PathVariable Long productId
     ) {
         productService.deleteProduct(productId);
+
         return ResponseEntity.noContent().build();
     }
 

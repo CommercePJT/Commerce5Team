@@ -1,4 +1,4 @@
-package com.example.commercepjt.order.dto;
+package com.example.commercepjt.customer.dto.response;
 
 import com.example.commercepjt.common.dto.PageInfo;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class OrderListResponse {
+public class CustomerListResponse {
 
-    private List<OrderResponse> orders;
+    private List<CustomerResponse> customers;
     private PageInfo pageInfo;
 }

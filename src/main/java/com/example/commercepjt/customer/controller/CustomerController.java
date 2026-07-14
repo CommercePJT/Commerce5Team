@@ -20,7 +20,9 @@ public class CustomerController {
 
     // 고객 상세 조회
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerResponse> findOne(@PathVariable Long customerId) {
+    public ResponseEntity<CustomerResponse> findOne(
+            @PathVariable Long customerId) {
+
         return ResponseEntity.ok(customerService.findOne(customerId));
     }
 
@@ -56,7 +58,9 @@ public class CustomerController {
 
     // 고객 삭제
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> delete(@PathVariable Long customerId) {
+    public ResponseEntity<Void> delete(
+            @PathVariable Long customerId)
+    {
         customerService.delete(customerId);
         return ResponseEntity.noContent().build();
     }
