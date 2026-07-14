@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomerListResponse {
 
-    private List<CustomerResponse> customers;
-    private PageInfo pageInfo;
+    private final List<CustomerResponse> customers;
+    private final PageInfo pageInfo;
 }
