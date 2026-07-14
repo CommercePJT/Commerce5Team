@@ -29,4 +29,22 @@ public class Customer extends BaseEntity {
     @Column(nullable = false)
     private CustomerStatus status;
 
+    public Customer(
+             String name, String email, String phone, CustomerStatus status
+    ) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.status = status;
+    }
+
+    public void update(String name, String email, String phone) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    public void updateStatus(CustomerStatus status) {
+        this.status = status;
+    }
 }
