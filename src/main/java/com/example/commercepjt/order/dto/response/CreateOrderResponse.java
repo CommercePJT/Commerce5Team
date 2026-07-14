@@ -1,37 +1,32 @@
 package com.example.commercepjt.order.dto.response;
 
 import com.example.commercepjt.order.entity.Order;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 public class CreateOrderResponse {
 
-    private Long orderId;
-    private String orderNumber;
-    private String customerName;
-    private String productName;
-    private int quantity;
-    private int totalPrice;
-    private String status;
-    private LocalDateTime orderedAt;
-    private String adminName;
+    private final Long orderId;
+    private final String orderNumber;
+    private final String customerName;
+    private final String productName;
+    private final int quantity;
+    private final int totalPrice;
+    private final String status;
+    private final LocalDateTime orderedAt;
+    private final String adminName;
 
-    public static CreateOrderResponse from(Order order) {
-        return new CreateOrderResponse(
-                order.getOrderId(),
-                order.getOrderNumber(),
-                order.getCustomer().getName(),
-                order.getProduct().getName(),
-                order.getQuantity(),
-                order.getTotalPrice(),
-                order.getStatus().name(),
-                order.getCreatedAt(),
-                order.getAdmin() !=null ? order.getAdmin().getName() : null);
-}
-
-
+    public CreateOrderResponse(Order order) {
+        this.orderId = order.getOrderId();
+        this.orderNumber = order.getOrderNumber();
+        this.customerName = order.getCustomer().getName();
+        this.productName = order.getProduct().getName();
+        this.quantity = order.getQuantity();
+        this.totalPrice = order.getTotalPrice();
+        this.status = order.getStatus().name();
+        this.orderedAt = order.getCreatedAt();
+        this.adminName = order.getAdmin() != null ? order.getAdmin().getName() : null;
+    }
 }

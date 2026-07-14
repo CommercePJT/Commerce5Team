@@ -1,4 +1,5 @@
 package com.example.commercepjt.admin.service;
+
 import com.example.commercepjt.admin.dto.request.RejectRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminStatusRequest;
@@ -26,14 +27,74 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
 
+
+    // 내 프로필 조회
+    @Transactional(readOnly = true)
+    public ProfileResponse getMyProfile(Long adminId) {
+        // 1. 로그인한 관리자 조회
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
+        // 2. 응답 반환
+        return new ProfileResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhone());
+    }
+
+    // 관리자 리스트 조회
+    @Transactional(readOnly = true)
+    public AdminListResponse getAdmins(
+            String keyword,
+            AdminRole role,
+            AdminStatus status,
+            Pageable pageable
+    ) {
+        // 1. 검색 조건 생성
+        Specification<Admin> spec =
+                Specification.where(AdminSpecification.keyword(keyword))
+                        .and(AdminSpecification.role(role))
+                        .and(AdminSpecification.status(status));
+        // 2. 조건에 맞는 관리자 조회 (페이징 적용)
+        Page<Admin> adminPage = adminRepository.findAll(spec, pageable);
+        // 3. Entity -> DTO 변환
+        List<AdminResponse> admins =
+                adminPage.getContent()
+                        .stream()
+                        .map(AdminResponse::new)
+                        .toList();
+
+        // 4. 페이징 정보 생성
+        PageInfo pageInfo = new PageInfo(adminPage);
+
+        // 5. 최종 응답 반환
+        return new AdminListResponse(admins, pageInfo);
+    }
+
     //관리자 상세 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public AdminResponse getAdmin(Long id) {
 
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
         return new AdminResponse(admin);
+    }
+
+    // 내 프로필 수정
+    @Transactional
+    public ProfileResponse updateMyProfile(Long adminId, UpdateAdminRequest request) {
+
+        // 1. 로그인한 관리자 조회
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
+        // 2. 정보 수정
+        admin.update(
+                request.getName(),
+                request.getEmail(),
+                request.getPhone());
+
+        // 3. 응답 반환
+       return new ProfileResponse(admin);
     }
 
     // 관리자 정보 수정
@@ -112,14 +173,10 @@ public class AdminService {
             throw new IllegalArgumentException("승인 대기 상태의 관리자만 거부할 수 있습니다.");
         }
 
-        // 3. 거부 사유 확인
-        if (request.getRejectReason() == null || request.getRejectReason().isBlank()) {
-            throw new IllegalArgumentException("거부 사유는 필수입니다.");
-        }
-        // 4. 거부 처리
+        // 3. 거부 처리
         admin.reject(request.getRejectReason());
 
-        // 5. 응답 반환
+        // 4. 응답 반환
         return new RejectResponse(
                 admin.getStatus(),
                 admin.getRejectedAt(),
@@ -134,71 +191,5 @@ public class AdminService {
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
         // 2. 삭제
         adminRepository.delete(admin);
-    }
-
-    // 내 프로필 조회
-    @Transactional(readOnly = true)
-    public ProfileResponse getMyProfile(Long adminId) {
-        // 1. 로그인한 관리자 조회
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
-        // 2. 응답 반환
-        return new ProfileResponse(
-                admin.getName(),
-                admin.getEmail(),
-                admin.getPhone());
-    }
-
-    // 관리자 리스트 조회
-    @Transactional(readOnly = true)
-    public AdminListResponse getAdmins(
-            String keyword,
-            AdminRole role,
-            AdminStatus status,
-            Pageable pageable
-    ) {
-        // 1. 검색 조건 생성
-        Specification<Admin> spec =
-                Specification.where(AdminSpecification.keyword(keyword))
-                        .and(AdminSpecification.role(role))
-                        .and(AdminSpecification.status(status));
-        // 2. 조건에 맞는 관리자 조회 (페이징 적용)
-        Page<Admin> adminPage = adminRepository.findAll(spec, pageable);
-        // 3. Entity -> DTO 변환
-        List<AdminResponse> admins =
-                adminPage.getContent()
-                        .stream()
-                        .map(AdminResponse::new)
-                        .toList();
-
-        // 4. 페이징 정보 생성
-        PageInfo pageInfo = new PageInfo(
-                adminPage.getNumber() + 1,
-                        adminPage.getSize(),
-                        adminPage.getTotalElements(),
-                        adminPage.getTotalPages());
-
-        // 5. 최종 응답 반환
-        return new AdminListResponse(admins, pageInfo);
-    }
-
-    // 내 프로필 수정
-    @Transactional
-    public ProfileResponse updateMyProfile(Long adminId, UpdateAdminRequest request) {
-
-        // 1. 로그인한 관리자 조회
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
-        // 2. 정보 수정
-        admin.update(
-                request.getName(),
-                request.getEmail(),
-                request.getPhone());
-
-        // 3. 응답 반환
-        return new ProfileResponse(
-                admin.getName(),
-                admin.getEmail(),
-                admin.getPhone());
     }
 }

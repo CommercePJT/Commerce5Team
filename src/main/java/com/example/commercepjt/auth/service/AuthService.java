@@ -61,10 +61,7 @@ public class AuthService {
         // 로그인 상태 검증
         validateAdminStatus(admin.getStatus(), admin);
 
-        return new LoginAdminInfoResponse(
-                admin.getId(),
-                admin.getEmail(),
-                admin.getRole());
+        return new LoginAdminInfoResponse(admin);
     }
 
     // 로그아웃
@@ -94,9 +91,10 @@ public class AuthService {
                 // 관리자 승인 대기 상태
             case PENDING -> throw new ForbiddenException("계정 승인 대기 중입니다.");
             // 관리자 신청 거부 상태
-            case REJECTED -> throw new ForbiddenException("관리자 신청이 거부되었습니다."
-                            + "거부 날짜: " + admin.getRejectedAt()
-                            + "거부 사유: " + admin.getRejectReason());
+            case REJECTED -> throw new ForbiddenException(
+                    "관리자 신청이 거부되었습니다."
+                    + "거부 날짜: " + admin.getRejectedAt()
+                    + "거부 사유: " + admin.getRejectReason());
             // 계정 정지 상태
             case SUSPENDED -> throw new ForbiddenException("정지된 계정입니다.");
             // 계정 비활성화 상태
@@ -104,32 +102,18 @@ public class AuthService {
         }
     }
 
-
     @Transactional
-    public void changePassword(
-            Long adminId,
-            UpdatePasswordRequest request
-    ) {
-
+    public void changePassword(Long adminId, UpdatePasswordRequest request) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() ->
-                        new UnauthorizedException("관리자를 찾을 수 없습니다.")
-                );
+                .orElseThrow(() -> new UnauthorizedException("관리자를 찾을 수 없습니다."));
 
         // 2. 현재 비밀번호 확인
-        if (!passwordEncoder.matches(
-                request.getPassword(),
-                admin.getPassword()
-        )) {
-
+        if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
             throw new UnauthorizedException("현재 비밀번호가 일치하지 않습니다.");
         }
-
         // 3. 새 비밀번호 암호화
-        String encodedPassword =
-                passwordEncoder.encode(request.getNewPassword());
-
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
         // 4. 비밀번호 변경
         admin.changePassword(encodedPassword);
     }

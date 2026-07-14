@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component // 스프링이 이 클래스를 감지하고 (Bean)으로 등록
-public class LoginCheckInterceptor implements HandlerInterceptor { // 이 인터페이스를 구현해야 스프링이 "아, 얘 문지기구나" 하고 알아챕니다.
+public class LoginCheckInterceptor implements HandlerInterceptor {
+    // 👆 이 인터페이스를 구현해야 스프링이 "아, 얘 문지기구나" 하고 알아챕니다.
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

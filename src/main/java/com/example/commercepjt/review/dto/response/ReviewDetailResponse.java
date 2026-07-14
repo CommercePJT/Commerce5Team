@@ -1,30 +1,26 @@
 package com.example.commercepjt.review.dto.response;
 
 import com.example.commercepjt.review.entity.Review;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
 public class ReviewDetailResponse {
 
-    private String productName;
-    private String customerName;
-    private String customerEmail;
-    private LocalDateTime createdAt;
-    private int rating;
-    private String content;
+    private final String productName;
+    private final String customerName;
+    private final String customerEmail;
+    private final LocalDateTime createdAt;
+    private final int rating;
+    private final String content;
 
-    public static ReviewDetailResponse from(Review review) {
-        return new ReviewDetailResponse(
-                review.getOrder().getProduct().getName(),
-                review.getOrder().getCustomer().getName(),
-                review.getOrder().getCustomer().getEmail(),
-                review.getCreatedAt(),
-                review.getRating(),
-                review.getContent()
-        );
+    public ReviewDetailResponse(Review review) {
+        this.productName = review.getOrder().getProduct().getName();
+        this.customerName = review.getOrder().getCustomer().getName();
+        this.customerEmail = review.getOrder().getCustomer().getEmail();
+        this.createdAt = review.getCreatedAt();
+        this.rating = review.getRating();
+        this.content = review.getContent();
     }
 }

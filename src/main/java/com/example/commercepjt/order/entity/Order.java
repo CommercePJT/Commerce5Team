@@ -45,7 +45,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    /** CS 대리 주문의 등록 관리자. 고객 직접 주문이면 null */
+    //CS 대리 주문의 등록 관리자. 고객 직접 주문이면 null
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;

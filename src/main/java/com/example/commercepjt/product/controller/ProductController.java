@@ -24,40 +24,40 @@ public class ProductController {
 
     // 상품 등록
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(
+    public ResponseEntity<ProductResponse> create(
             @LoginAdmin Long adminId,
             @Valid @RequestBody CreateProductRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.createProduct(adminId, request));
+                .body(productService.create(adminId, request));
     }
 
     // 상품 상세조회
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDetailResponse> getProduct(
+    public ResponseEntity<ProductDetailResponse> findOne(
             @PathVariable Long productId
     ) {
-        return ResponseEntity.ok(productService.getProduct(productId));
+        return ResponseEntity.ok(productService.findOne(productId));
     }
 
     // 상품 리스트 조회
     @GetMapping
-    public ResponseEntity<ProductListResponse> getProducts(
+    public ResponseEntity<ProductListResponse> findAll(
             @RequestParam(required = false) String keyword,
                   @RequestParam(required = false) String category,
             @RequestParam(required = false) ProductStatus status, Pageable pageable
     ) {
-        return ResponseEntity.ok(productService.getProducts(keyword, category, status, pageable)
+        return ResponseEntity.ok(productService.findAll(keyword, category, status, pageable)
         );
     }
 
     // 상품 수정
     @PatchMapping("/{productId}")
-    public ResponseEntity<ProductResponse> updateProduct(
+    public ResponseEntity<ProductResponse> update(
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductRequest request
     ) {
-        return ResponseEntity.ok(productService.updateProduct(productId, request)
+        return ResponseEntity.ok(productService.update(productId, request)
         );
     }
 
@@ -83,10 +83,10 @@ public class ProductController {
 
     // 상품 삭제
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(
+    public ResponseEntity<Void> delete(
             @PathVariable Long productId
     ) {
-        productService.deleteProduct(productId);
+        productService.delete(productId);
 
         return ResponseEntity.noContent().build();
     }

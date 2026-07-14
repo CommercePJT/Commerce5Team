@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 public class ApproveResponse {
 
-    private AdminStatus status;
-    private LocalDateTime approvedAt;
+    private final AdminStatus status;
+    private final LocalDateTime approvedAt;
 
     public ApproveResponse(
             AdminStatus status,

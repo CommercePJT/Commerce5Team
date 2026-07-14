@@ -30,56 +30,51 @@ public class ReviewService {
 
     // 리뷰 생성
     @Transactional
-    public ReviewResponse createReview(CreateReviewRequest request) {
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 주문입니다"));
+    public ReviewResponse create(CreateReviewRequest request) {
+        Order order = orderRepository.findById(request.getOrderId()).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다."));
 
         Review review = Review.create(order, request.getRating(), request.getContent());
         reviewRepository.save(review);
 
-        return ReviewResponse.from(review);
+        return new ReviewResponse(review);
     }
 
     // 리뷰 리스트 조회
     @Transactional(readOnly = true)
-    public ReviewListResponse getReviews(String keyword, Integer rating, Pageable pageable) {
+    public ReviewListResponse findAll(String keyword, Integer rating, Pageable pageable) {
         Page<Review> reviewPage = reviewRepository.search(keyword, rating, pageable);
 
         List<ReviewResponse> reviews = reviewPage.getContent().stream()
-                .map(ReviewResponse::from)
+                .map(ReviewResponse::new)
                 .toList();
 
-        PageInfo pageInfo = new PageInfo(
-                reviewPage.getNumber() + 1,
-                reviewPage.getSize(),
-                reviewPage.getTotalElements(),
-                reviewPage.getTotalPages()
-        );
+        PageInfo pageInfo = new PageInfo(reviewPage);
 
         return new ReviewListResponse(reviews, pageInfo);
     }
 
     // 리뷰 상세 조회
     @Transactional(readOnly = true)
-    public ReviewDetailResponse getReview(Long id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다"));
+    public ReviewDetailResponse findOne(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new NotFoundException("리뷰를 찾을 수 없습니다."));
 
-        return ReviewDetailResponse.from(review);
+        return new ReviewDetailResponse(review);
     }
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(Long id) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다"));
+    public void delete(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new NotFoundException("리뷰를 찾을 수 없습니다."));
 
         reviewRepository.delete(review);
     }
 
     // 상품별 리뷰 통계 조회
     @Transactional(readOnly = true)
-    public ProductReviewResponse getProductReviews(Long productId) {
+    public ProductReviewResponse findProductReviews(Long productId) {
         Double average = reviewRepository.findAverageRating(productId);
         double averageRating = (average == null) ? 0.0 : Math.round(average * 10) / 10.0;
 

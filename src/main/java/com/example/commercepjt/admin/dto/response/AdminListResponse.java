@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AdminListResponse {
 
-    private List<AdminResponse> admins;
-    private PageInfo pageInfo;
+    private final List<AdminResponse> admins;
+    private final PageInfo pageInfo;
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class UpdateRoleResponse {
 
-    private AdminRole role;
+    private final AdminRole role;
 
     public UpdateRoleResponse(AdminRole role) {
         this.role = role;

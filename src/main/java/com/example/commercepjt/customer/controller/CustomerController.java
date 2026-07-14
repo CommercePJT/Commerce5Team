@@ -8,6 +8,7 @@ import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,12 +32,10 @@ public class CustomerController {
     public ResponseEntity<CustomerListResponse> findAll(
             @RequestParam(required = false) String keyword,              // 검색어 없어도 요청 가능
             @RequestParam(required = false) CustomerStatus status,       // 상태 필터 없어도 요청 가능
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            Pageable pageable) {
+
         return ResponseEntity.ok(customerService.findAll(
-                keyword, status, page, size, sortBy, sortDir));
+                keyword, status,pageable));
     }
 
     // 고객 정보 수정

@@ -19,56 +19,54 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/orders")
 @RequiredArgsConstructor
-
 public class OrderController {
 
     private final OrderService orderService;
 
     // CS 주문 생성
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(
+    public ResponseEntity<CreateOrderResponse> create(
             @LoginAdmin Long adminId,
-            @Valid @RequestBody CreateOrderRequest request
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(request, adminId));
+            @Valid @RequestBody CreateOrderRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.create(request, adminId));
     }
 
     // 주문 리스트 조회
     @GetMapping
-    public ResponseEntity<OrderListResponse> getOrders(
+    public ResponseEntity<OrderListResponse> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) OrderStatus status, Pageable pageable
-    ) {
-        return ResponseEntity.ok(orderService.getOrders(keyword, status, pageable));
+            @RequestParam(required = false) OrderStatus status,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(orderService.findAll(keyword, status, pageable));
     }
 
     // 주문 상세 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderDetailResponse> getOrder(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(orderService.getOrder(id));
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDetailResponse> findOne(
+            @PathVariable Long orderId) {
+
+        return ResponseEntity.ok(orderService.findOne(orderId));
     }
 
     // 주문 상태 수정
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{orderId}/status")
     public ResponseEntity<Void> updateStatus(
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateOrderStatusRequest request
-    ) {
-        orderService.updateStatus(id, request.getStatus());
+            @PathVariable Long orderId,
+            @Valid @RequestBody UpdateOrderStatusRequest request) {
 
+        orderService.updateStatus(orderId, request.getStatus());
         return ResponseEntity.ok().build();
     }
 
     // 주문 취소
-    @PatchMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelOrder(
-            @PathVariable Long id,
-            @Valid @RequestBody CancelOrderRequest request
-    ) {
-        orderService.cancelOrder(id, request.getCancelReason());
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<Void> cancel(
+            @PathVariable Long orderId,
+            @Valid @RequestBody CancelOrderRequest request) {
 
-        return ResponseEntity.ok().build();
+        orderService.cancel(orderId, request.getCancelReason());
+        return ResponseEntity.noContent().build();
     }
 }

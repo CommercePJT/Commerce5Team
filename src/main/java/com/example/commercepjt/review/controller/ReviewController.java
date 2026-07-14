@@ -19,46 +19,46 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    //리뷰생성
+    // 리뷰 생성
     @PostMapping("/reviews")
-    public ResponseEntity<ReviewResponse> createReview(
-        @Valid @RequestBody CreateReviewRequest request
-    ) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(request));
+    public ResponseEntity<ReviewResponse> create(
+            @Valid @RequestBody CreateReviewRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.create(request));
     }
 
     // 리뷰 리스트 조회
     @GetMapping("/reviews")
-    public ResponseEntity<ReviewListResponse> getReviews(
+    public ResponseEntity<ReviewListResponse> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer rating, Pageable pageable
-    ) {
-        return ResponseEntity.ok(reviewService.getReviews(keyword, rating, pageable));
+            @RequestParam(required = false) Integer rating,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(reviewService.findAll(keyword, rating, pageable));
     }
 
-    //리뷰상세조회
-    @GetMapping("/reviews/{id}")
-    public ResponseEntity<ReviewDetailResponse> getReview(
-        @PathVariable Long id
-    ) {
-    return ResponseEntity.ok(reviewService.getReview(id));
+    // 리뷰 상세 조회
+    @GetMapping("/reviews/{reviewId}")
+    public ResponseEntity<ReviewDetailResponse> findOne(
+            @PathVariable Long reviewId) {
+
+        return ResponseEntity.ok(reviewService.findOne(reviewId));
     }
 
-    //리뷰삭제
-    @DeleteMapping("/reviews/{id}")
-    public ResponseEntity<Void> deleteReview(
-            @PathVariable Long id
-    ) {
-    reviewService.deleteReview(id);
+    // 리뷰 삭제
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long reviewId) {
 
-    return ResponseEntity.noContent().build();
+        reviewService.delete(reviewId);
+        return ResponseEntity.noContent().build();
     }
 
-    //상품별 리뷰 통계 (도전과제)
-    @GetMapping("/products/{id}/reviews")
-    public ResponseEntity<ProductReviewResponse> getProductReviews(
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(reviewService.getProductReviews(id));
+    // 상품별 리뷰 통계 조회 (도전과제)
+    @GetMapping("/products/{productId}/reviews")
+    public ResponseEntity<ProductReviewResponse> findProductReviews(
+            @PathVariable Long productId) {
+
+        return ResponseEntity.ok(reviewService.findProductReviews(productId));
     }
-    }
+}

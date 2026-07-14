@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class UpdateStatusResponse {
 
-    private AdminStatus status;
+    private final AdminStatus status;
 
     public UpdateStatusResponse(AdminStatus status){
         this.status = status;

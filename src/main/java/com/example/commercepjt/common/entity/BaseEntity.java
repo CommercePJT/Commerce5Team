@@ -1,9 +1,6 @@
 package com.example.commercepjt.common.entity;
 
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,10 +14,9 @@ import java.time.LocalDateTime;
 public class BaseEntity {
 
     @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedAt;
 }

@@ -25,16 +25,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
 
     // 상품 등록
-    public ProductResponse createProduct(Long adminId, CreateProductRequest request) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
+    @Transactional
+    public ProductResponse create(Long adminId, CreateProductRequest request) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
         if (productRepository.existsByName(request.getName())) {
             throw new DuplicateException("이미 등록된 상품 이름입니다.");
         }
@@ -54,7 +54,7 @@ public class ProductService {
 
     // 상품 단건 조회
     @Transactional(readOnly = true)
-    public ProductDetailResponse getProduct(Long productId) {
+    public ProductDetailResponse findOne(Long productId) {
         Product product = findProduct(productId);
 
         return new ProductDetailResponse(
@@ -71,25 +71,21 @@ public class ProductService {
 
     // 상품 리스트 조회
     @Transactional(readOnly = true)
-    public ProductListResponse getProducts(String keyword, String category, ProductStatus status, Pageable pageable) {
+    public ProductListResponse findAll(String keyword, String category, ProductStatus status, Pageable pageable) {
         Page<Product> productPage = productRepository.search(keyword, category, status, pageable);
 
         List<ProductResponse> products = productPage.getContent().stream()
                 .map(this::toProductResponse)
                 .toList();
 
-        PageInfo pageInfo = new PageInfo(
-                productPage.getNumber() + 1,
-                productPage.getSize(),
-                productPage.getTotalElements(),
-                productPage.getTotalPages()
-        );
+        PageInfo pageInfo = new PageInfo(productPage);
 
         return new ProductListResponse(products, pageInfo);
     }
 
     // 상품 수정
-    public ProductResponse updateProduct(
+    @Transactional
+    public ProductResponse update(
             Long productId,
             UpdateProductRequest request
     ) {
@@ -108,6 +104,7 @@ public class ProductService {
     }
 
     // 상품 재고 수정
+    @Transactional
     public UpdateProductStockResponse updateStock(
             Long productId,
             UpdateStockRequest request
@@ -120,6 +117,7 @@ public class ProductService {
     }
 
     // 상품 상태 수정
+    @Transactional
     public UpdateProductStatusResponse updateStatus(
             Long productId,
             UpdateProductStatusRequest request
@@ -132,7 +130,8 @@ public class ProductService {
     }
 
     // 상품 삭제
-    public void deleteProduct(Long productId) {
+    @Transactional
+    public void delete(Long productId) {
         Product product = findProduct(productId);
 
         productRepository.delete(product);
@@ -154,7 +153,7 @@ public class ProductService {
 
     //상품 겅증 공통 메서드
     private Product findProduct(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
+        return productRepository.findById(productId).orElseThrow(
+                () -> new NotFoundException("상품을 찾을 수 없습니다."));
     }
 }

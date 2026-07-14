@@ -1,6 +1,4 @@
 package com.example.commercepjt.common.config;
-
-import com.example.commercepjt.common.annotation.LoginAdmin;
 import com.example.commercepjt.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -15,20 +13,18 @@ import org.springframework.web.method.support.ModelAndViewContainer; // 👈 1. 
 @Component
 public class LoginAdminArgumentResolver implements HandlerMethodArgumentResolver {
 
-    /**
-     * 1단계: 이 비서(리졸버)가 어떤 파라미터를 담당할지 필터링하는 검문소입니다.
-     * 컨트롤러 메서드의 파라미터에 @LoginAdmin 어노테이션이 붙어있고, 타입이 Long(Id)인 경우에만 작동합니다.
-     */
+   // 1단계: 이 비서(리졸버)가 어떤 파라미터를 담당할지 필터링하는 검문소입니다.
+    //컨트롤러 메서드의 파라미터에 @LoginAdmin 어노테이션이 붙어있고, 타입이 Long(Id)인 경우에만 작동합니다.
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(LoginAdmin.class)
                 && parameter.getParameterType().equals(Long.class);
     }
 
-    /**
-     * 2단계: supportsParameter가 true를 반환하면 실제로 실행되는 몸통입니다.
-     * 세션을 뒤져서 로그인한 관리자의 ID를 꺼낸 뒤, 컨트롤러 파라미터에 자동으로 꽂아줍니다.
-     */
+    //2단계: supportsParameter가 true를 반환하면 실제로 실행되는 몸통입니다.
+     //세션을 뒤져서 로그인한 관리자의 ID를 꺼낸 뒤, 컨트롤러 파라미터에 자동으로 꽂아줍니다.
+
     @Override
     public Object resolveArgument(@NotNull MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {

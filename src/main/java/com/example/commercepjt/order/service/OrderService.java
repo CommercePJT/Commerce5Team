@@ -36,19 +36,21 @@ public class OrderService {
 
     // CS 주문 생성
     @Transactional
-    public CreateOrderResponse createOrder(CreateOrderRequest request, Long adminId) {
-        Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 고객입니다"));
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 상품입니다"));
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 관리자입니다"));
+    public CreateOrderResponse create(CreateOrderRequest request, Long adminId) {
+        Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
+                () -> new NotFoundException("고객을 찾을 수 없습니다."));
+
+        Product product = productRepository.findById(request.getProductId()).orElseThrow(
+                () -> new NotFoundException("상품을 찾을 수 없습니다."));
+
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
         if (product.getStatus() == ProductStatus.DISCONTINUED) {
-            throw new IllegalArgumentException("단종된 상품은 주문할 수 없습니다");
+            throw new IllegalArgumentException("단종된 상품은 주문할 수 없습니다.");
         }
         if (product.getStatus() == ProductStatus.SOLD_OUT) {
-            throw new IllegalArgumentException("품절된 상품은 주문할 수 없습니다");
+            throw new IllegalArgumentException("품절된 상품은 주문할 수 없습니다.");
         }
 
         product.decreaseStock(request.getQuantity());
@@ -56,51 +58,46 @@ public class OrderService {
         Order order = Order.create(customer, product, request.getQuantity(), admin);
         orderRepository.save(order);
 
-        return CreateOrderResponse.from(order);
+        return new CreateOrderResponse(order);
     }
 
     // 주문 리스트 조회
     @Transactional(readOnly = true)
-    public OrderListResponse getOrders(String keyword, OrderStatus status, Pageable pageable) {
+    public OrderListResponse findAll(String keyword, OrderStatus status, Pageable pageable) {
         Page<Order> orderPage = orderRepository.search(keyword, status, pageable);
 
         List<OrderResponse> orders = orderPage.getContent().stream()
-                .map(OrderResponse::from)
+                .map(OrderResponse::new)
                 .toList();
 
-        PageInfo pageInfo = new PageInfo(
-                orderPage.getNumber() + 1,
-                orderPage.getSize(),
-                orderPage.getTotalElements(),
-                orderPage.getTotalPages()
-        );
+        PageInfo pageInfo = new PageInfo(orderPage);
 
         return new OrderListResponse(orders, pageInfo);
     }
 
     // 주문 상세 조회
     @Transactional(readOnly = true)
-    public OrderDetailResponse getOrder(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 주문입니다"));
+    public OrderDetailResponse findOne(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다."));
 
-        return OrderDetailResponse.from(order);
+        return new OrderDetailResponse(order);
     }
 
     // 주문 상태 수정
     @Transactional
-    public void updateStatus(Long id, OrderStatus status) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 주문입니다"));
+    public void updateStatus(Long orderId, OrderStatus status) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다."));
 
         order.updateStatus(status);
     }
 
     // 주문 취소
     @Transactional
-    public void cancelOrder(Long id, String cancelReason) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 주문입니다"));
+    public void cancel(Long orderId, String cancelReason) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다."));
 
         order.cancel(cancelReason);
         order.getProduct().increaseStock(order.getQuantity());
