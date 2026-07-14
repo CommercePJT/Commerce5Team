@@ -1,4 +1,4 @@
-package com.example.commercepjt.auth.dto;
+package com.example.commercepjt.auth.dto.response;
 
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminRole;

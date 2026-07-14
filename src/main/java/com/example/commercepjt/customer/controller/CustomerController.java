@@ -1,9 +1,9 @@
 package com.example.commercepjt.customer.controller;
 
-import com.example.commercepjt.customer.dto.CustomerListResponse;
-import com.example.commercepjt.customer.dto.CustomerResponse;
-import com.example.commercepjt.customer.dto.UpdateCustomerRequest;
-import com.example.commercepjt.customer.dto.UpdateCustomerStatusRequest;
+import com.example.commercepjt.customer.dto.response.CustomerListResponse;
+import com.example.commercepjt.customer.dto.response.CustomerResponse;
+import com.example.commercepjt.customer.dto.request.UpdateCustomerRequest;
+import com.example.commercepjt.customer.dto.request.UpdateCustomerStatusRequest;
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.service.CustomerService;
 import jakarta.validation.Valid;

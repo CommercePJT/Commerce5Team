@@ -1,4 +1,4 @@
-package com.example.commercepjt.auth.dto;
+package com.example.commercepjt.auth.dto.request;
 
 import lombok.Getter;
 

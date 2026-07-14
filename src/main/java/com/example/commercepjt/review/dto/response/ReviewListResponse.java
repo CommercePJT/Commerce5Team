@@ -1,4 +1,4 @@
-package com.example.commercepjt.review.dto;
+package com.example.commercepjt.review.dto.response;
 
 import com.example.commercepjt.common.dto.PageInfo;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.commercepjt.customer.dto;
+package com.example.commercepjt.customer.dto.request;
 
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import jakarta.validation.constraints.NotNull;

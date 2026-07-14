@@ -1,13 +1,9 @@
 package com.example.commercepjt.admin.service;
-
-import com.example.commercepjt.admin.dto.*;
 import com.example.commercepjt.admin.dto.request.RejectRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminStatusRequest;
 import com.example.commercepjt.admin.dto.request.UpdateRoleRequest;
-import com.example.commercepjt.admin.dto.response.AdminListResponse;
-import com.example.commercepjt.admin.dto.response.AdminResponse;
-import com.example.commercepjt.admin.dto.response.ProfileResponse;
+import com.example.commercepjt.admin.dto.response.*;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminRole;
 import com.example.commercepjt.admin.entity.AdminStatus;
@@ -45,24 +41,18 @@ public class AdminService {
 
     }
 
-    @Transactional
     // 관리자 정보 수정
+    @Transactional
     public AdminResponse updateAdmin(Long id, UpdateAdminRequest request) {
 
         // 1. 수정할 관리자 조회
-        Admin admin = adminRepository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("관리자를 찾을 수 없습니다.")
-                );
-
-
+        Admin admin = adminRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
         // 2. Entity 수정 메서드 호출
         admin.update(
                 request.getName(),
                 request.getEmail(),
-                request.getPhone()
-        );
-
+                request.getPhone());
 
         // 3. DTO 변환 후 반환
         return new AdminResponse(admin);

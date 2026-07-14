@@ -1,6 +1,10 @@
 package com.example.commercepjt.review.controller;
 
-import com.example.commercepjt.review.dto.*;
+import com.example.commercepjt.review.dto.request.CreateReviewRequest;
+import com.example.commercepjt.review.dto.response.ProductReviewResponse;
+import com.example.commercepjt.review.dto.response.ReviewDetailResponse;
+import com.example.commercepjt.review.dto.response.ReviewListResponse;
+import com.example.commercepjt.review.dto.response.ReviewResponse;
 import com.example.commercepjt.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,27 +18,28 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-//리뷰생성(테스트데이터용)
-@PostMapping("/reviews")
-public ResponseEntity<ReviewResponse> createReview(@Valid @RequestBody CreateReviewRequest request) {
+    //리뷰생성
+    @PostMapping("/reviews")
+    public ResponseEntity<ReviewResponse> createReview(
+        @Valid @RequestBody CreateReviewRequest request
+    ) {
     return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.createReview(request));
 }
 
-//리뷰리스트조회
-@GetMapping("/reviews")
-public ResponseEntity<ReviewListResponse> getReviews(
-        @RequestParam(required = false) String keyword,
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "createdAt") String sortBy,
-        @RequestParam(defaultValue = "desc") String direction,
-        @RequestParam(required = false) Integer rating) {
-    return ResponseEntity.ok(reviewService.getReviews(keyword, page, size, sortBy, direction, rating));
-}
+    // 리뷰 리스트 조회
+    @GetMapping("/reviews")
+    public ResponseEntity<ReviewListResponse> getReviews(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer rating, Pageable pageable
+    ) {
+        return ResponseEntity.ok(reviewService.getReviews(keyword, rating, pageable));
+    }
 
-//리뷰상세조회
-@GetMapping("/reviews/{id}")
-public ResponseEntity<ReviewDetailResponse> getReview(@PathVariable Long id) {
+    //리뷰상세조회
+    @GetMapping("/reviews/{id}")
+    public ResponseEntity<ReviewDetailResponse> getReview(
+        @PathVariable Long id
+    ) {
     return ResponseEntity.ok(reviewService.getReview(id));
 }
 

@@ -1,4 +1,4 @@
-package com.example.commercepjt.order.dto;
+package com.example.commercepjt.order.dto.request;
 
 import com.example.commercepjt.order.entity.OrderStatus;
 import lombok.Getter;

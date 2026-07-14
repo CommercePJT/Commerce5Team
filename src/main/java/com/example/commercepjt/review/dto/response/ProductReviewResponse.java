@@ -1,4 +1,4 @@
-package com.example.commercepjt.review.dto;
+package com.example.commercepjt.review.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

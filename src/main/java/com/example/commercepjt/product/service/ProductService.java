@@ -31,6 +31,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
 
+    // 상품 등록
     public ProductResponse createProduct(Long adminId, CreateProductRequest request) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
@@ -51,6 +52,7 @@ public class ProductService {
         return toProductResponse(savedProduct);
     }
 
+    // 상품 단건 조회
     @Transactional(readOnly = true)
     public ProductDetailResponse getProduct(Long productId) {
         Product product = findProduct(productId);
@@ -67,15 +69,9 @@ public class ProductService {
         );
     }
 
+    // 상품 리스트 조회
     @Transactional(readOnly = true)
-    public ProductListResponse getProducts(String keyword, int page, int size,
-                                           String sortBy, String direction,
-                                           String category, ProductStatus status) {
-        Sort sort = direction.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-
+    public ProductListResponse getProducts(String keyword, String category, ProductStatus status, Pageable pageable) {
         Page<Product> productPage = productRepository.search(keyword, category, status, pageable);
 
         List<ProductResponse> products = productPage.getContent().stream()
@@ -92,6 +88,7 @@ public class ProductService {
         return new ProductListResponse(products, pageInfo);
     }
 
+    // 상품 수정
     public ProductResponse updateProduct(
             Long productId,
             UpdateProductRequest request
@@ -110,6 +107,7 @@ public class ProductService {
         return toProductResponse(product);
     }
 
+    // 상품 재고 수정
     public UpdateProductStockResponse updateStock(
             Long productId,
             UpdateStockRequest request
@@ -121,6 +119,7 @@ public class ProductService {
         return new UpdateProductStockResponse(product.getStock());
     }
 
+    // 상품 상태 수정
     public UpdateProductStatusResponse updateStatus(
             Long productId,
             UpdateProductStatusRequest request
@@ -132,13 +131,14 @@ public class ProductService {
         return new UpdateProductStatusResponse(product.getStatus());
     }
 
-
+    // 상품 삭제
     public void deleteProduct(Long productId) {
         Product product = findProduct(productId);
 
         productRepository.delete(product);
     }
 
+    //
     private ProductResponse toProductResponse(Product product) {
         return new ProductResponse(
                 product.getProductId(),
@@ -152,6 +152,7 @@ public class ProductService {
         );
     }
 
+    //상품 겅증 공통 메서드
     private Product findProduct(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));

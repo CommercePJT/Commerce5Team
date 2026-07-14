@@ -3,9 +3,11 @@ package com.example.commercepjt.auth.service;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
-import com.example.commercepjt.admin.service.AdminService;
-import com.example.commercepjt.auth.dto.*;
-import com.example.commercepjt.auth.session.SessionConst;
+import com.example.commercepjt.auth.dto.request.LoginAdminRequest;
+import com.example.commercepjt.auth.dto.request.SignupAdminRequest;
+import com.example.commercepjt.auth.dto.request.UpdatePasswordRequest;
+import com.example.commercepjt.auth.dto.response.LoginAdminInfoResponse;
+import com.example.commercepjt.auth.dto.response.SignupAdminResponse;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.ForbiddenException;
@@ -54,8 +56,7 @@ public class AuthService {
 
     // 로그인
     @Transactional(readOnly = true)
-    public LoginAdminInfo login(LoginAdminRequest request) {
-
+    public LoginAdminInfoResponse login(LoginAdminRequest request) {
         // 이메일로 관리자 조회
         Admin admin = adminRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
@@ -67,8 +68,11 @@ public class AuthService {
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword()))
             throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+        // 로그인 상태 검증
+        validateAdminStatus(admin.getStatus(), admin);
 
-        return new LoginAdminInfo(
+        return new LoginAdminInfoResponse(
                 admin.getId(),
                 admin.getEmail(),
                 admin.getRole());

@@ -1,7 +1,10 @@
 package com.example.commercepjt.auth.controller;
 
-import com.example.commercepjt.auth.dto.UpdatePasswordRequest;
-import com.example.commercepjt.auth.dto.*;
+import com.example.commercepjt.auth.dto.request.LoginAdminRequest;
+import com.example.commercepjt.auth.dto.request.SignupAdminRequest;
+import com.example.commercepjt.auth.dto.request.UpdatePasswordRequest;
+import com.example.commercepjt.auth.dto.response.LoginAdminInfoResponse;
+import com.example.commercepjt.auth.dto.response.SignupAdminResponse;
 import com.example.commercepjt.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -31,7 +34,7 @@ public class AuthController {
                                       HttpServletRequest servletRequest) {
 
         // 로그인 검증 후 관리자 정보 반환
-        LoginAdminInfo loginAdmin = authService.login(request);
+        LoginAdminInfoResponse loginAdmin = authService.login(request);
         // 세션 생성
         HttpSession session = servletRequest.getSession();
         // 필요한 정보 세션에 저장

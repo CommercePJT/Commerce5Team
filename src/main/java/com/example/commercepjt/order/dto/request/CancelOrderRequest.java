@@ -1,4 +1,4 @@
-package com.example.commercepjt.order.dto;
+package com.example.commercepjt.order.dto.request;
 
 import lombok.Getter;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.example.commercepjt.auth.dto;
+package com.example.commercepjt.auth.dto.request;
 
 import com.example.commercepjt.admin.entity.AdminRole;
 import jakarta.validation.constraints.*;
@@ -32,4 +32,10 @@ public class SignupAdminRequest {
     @NotNull(message = "관리자 역할은 필수입니다.")
     private AdminRole role;
 
+    @Getter
+    public static class LoginRequest {
+
+        private String email;
+        private String password;
+    }
 }

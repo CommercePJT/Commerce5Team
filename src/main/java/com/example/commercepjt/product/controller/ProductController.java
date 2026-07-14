@@ -1,5 +1,6 @@
 package com.example.commercepjt.product.controller;
 
+import com.example.commercepjt.common.config.LoginAdmin;
 import com.example.commercepjt.product.dto.request.CreateProductRequest;
 import com.example.commercepjt.product.dto.request.UpdateProductRequest;
 import com.example.commercepjt.product.dto.request.UpdateProductStatusRequest;
@@ -20,27 +21,27 @@ public class ProductController {
 
     private final ProductService productService;
 
+    // 상품 등록
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
-            @SessionAttribute(name = "adminId") Long adminId,
+            @LoginAdmin Long adminId,
             @Valid @RequestBody CreateProductRequest request
     ) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productService.createProduct(adminId, request));
     }
 
+    // 상품 상세조회
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailResponse> getProduct(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId
     ) {
         return ResponseEntity.ok(productService.getProduct(productId));
     }
 
+    // 상품 리스트 조회
     @GetMapping
     public ResponseEntity<ProductListResponse> getProducts(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -49,47 +50,43 @@ public class ProductController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) ProductStatus status
     ) {
-        return ResponseEntity.ok(
-                productService.getProducts(keyword, page, size, sortBy, direction, category, status)
+        return ResponseEntity.ok(productService.getProducts(keyword, category, status, pageable)
         );
     }
 
+    // 상품 수정
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductResponse> updateProduct(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductRequest request
     ) {
-        return ResponseEntity.ok(
-                productService.updateProduct(productId, request)
+        return ResponseEntity.ok(productService.updateProduct(productId, request)
         );
     }
 
+    // 상품 재고 수정
     @PatchMapping("/{productId}/stock")
     public ResponseEntity<UpdateProductStockResponse> updateStock(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
             @Valid @RequestBody UpdateStockRequest request
     ) {
-        return ResponseEntity.ok(
-                productService.updateStock(productId, request)
+        return ResponseEntity.ok(productService.updateStock(productId, request)
         );
     }
 
+    // 상품 상태 수정
     @PatchMapping("/{productId}/status")
     public ResponseEntity<UpdateProductStatusResponse> updateStatus(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductStatusRequest request
     ) {
-        return ResponseEntity.ok(
-                productService.updateStatus(productId, request)
+        return ResponseEntity.ok(productService.updateStatus(productId, request)
         );
     }
 
+    // 상품 삭제
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId
     ) {
         productService.deleteProduct(productId);

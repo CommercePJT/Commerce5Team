@@ -1,17 +1,15 @@
 package com.example.commercepjt.admin.controller;
 
-import com.example.commercepjt.admin.dto.*;
 import com.example.commercepjt.admin.dto.request.RejectRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminRequest;
 import com.example.commercepjt.admin.dto.request.UpdateAdminStatusRequest;
 import com.example.commercepjt.admin.dto.request.UpdateRoleRequest;
-import com.example.commercepjt.admin.dto.response.AdminListResponse;
-import com.example.commercepjt.admin.dto.response.AdminResponse;
-import com.example.commercepjt.admin.dto.response.ProfileResponse;
+import com.example.commercepjt.admin.dto.response.*;
 import com.example.commercepjt.admin.entity.AdminRole;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.service.AdminService;
-import jakarta.servlet.http.HttpSession;
+import com.example.commercepjt.common.config.LoginAdmin;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +25,19 @@ public class AdminController {
     // 내 프로필 조회
     @GetMapping("/me")
     public ResponseEntity<ProfileResponse> getMyProfile(
-            HttpSession session
+            @LoginAdmin Long adminId
     ) {
+        return ResponseEntity.ok(adminService.getMyProfile(adminId));
+    }
 
-        Long adminId = (Long) session.getAttribute("adminId");
-
-        return ResponseEntity.ok(
-                adminService.getMyProfile(adminId)
-        );
+    // 관리자 리스트 조회
+    @GetMapping
+    public ResponseEntity<AdminListResponse> getAdmins(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) AdminRole role,
+            @RequestParam(required = false) AdminStatus status, Pageable pageable
+    ) {
+        return ResponseEntity.ok(adminService.getAdmins(keyword, role, status, pageable));
     }
 
     // 관리자 상세 조회
@@ -42,11 +45,16 @@ public class AdminController {
     public ResponseEntity<AdminResponse> getAdmin(
             @PathVariable Long id
     ) {
+        return ResponseEntity.ok(adminService.getAdmin(id));
+    }
 
-        return ResponseEntity.ok(
-                adminService.getAdmin(id)
-        );
-
+    // 내 프로필 수정
+    @PatchMapping("/me")
+    public ResponseEntity<ProfileResponse> updateMyProfile(
+            @LoginAdmin Long adminId, 
+            @Valid @RequestBody UpdateAdminRequest request
+    ) {
+        return ResponseEntity.ok(adminService.updateMyProfile(adminId, request));
     }
 
     // 관리자 정보 수정
@@ -118,43 +126,5 @@ public class AdminController {
         adminService.deleteAdmin(id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    // 관리자 리스트 조회
-    @GetMapping
-    public ResponseEntity<AdminListResponse> getAdmins(
-
-            @RequestParam(required = false) String keyword,
-
-            @RequestParam(required = false) AdminRole role,
-
-            @RequestParam(required = false) AdminStatus status,
-
-            Pageable pageable
-
-    ) {
-
-        return ResponseEntity.ok(
-                adminService.getAdmins(
-                        keyword,
-                        role,
-                        status,
-                        pageable
-                )
-        );
-
-    }
-    // 내 프로필 수정
-    @PatchMapping("/me")
-    public ResponseEntity<ProfileResponse> updateMyProfile(
-            @RequestBody UpdateAdminRequest request,
-            HttpSession session
-    ) {
-
-        Long adminId = (Long) session.getAttribute("adminId");
-
-        return ResponseEntity.ok(
-                adminService.updateMyProfile(adminId, request)
-        );
     }
 }
