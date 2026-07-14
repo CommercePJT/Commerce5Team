@@ -1,9 +1,7 @@
 package com.example.commercepjt.auth.controller;
 
-import com.example.commercepjt.auth.dto.LoginAdminInfo;
-import com.example.commercepjt.auth.dto.LoginAdminRequest;
-import com.example.commercepjt.auth.dto.SignupAdminRequest;
-import com.example.commercepjt.auth.dto.SignupAdminResponse;
+import com.example.commercepjt.auth.dto.UpdatePasswordRequest;
+import com.example.commercepjt.auth.dto.*;
 import com.example.commercepjt.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -11,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,4 +54,17 @@ public class AuthController {
         // 로그아웃 성공 시 204 No Content 반환
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody UpdatePasswordRequest request,
+            HttpSession session
+    ) {
+
+        Long adminId = (Long) session.getAttribute("adminId");
+
+        authService.changePassword(adminId, request);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

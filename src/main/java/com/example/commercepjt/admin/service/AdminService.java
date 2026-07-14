@@ -194,11 +194,21 @@ public class AdminService {
     }
 
     // 내 프로필 조회
-    // 로그인 세션 구현 후 작성 예정
-    public ProfileResponse getMyProfile() {
+    @Transactional(readOnly = true)
+    public ProfileResponse getMyProfile(Long adminId) {
 
-        // TODO: 로그인 세션에서 현재 관리자 ID 가져오기
-        return null;
+        // 1. 로그인한 관리자 조회
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+        // 2. 응답 반환
+        return new ProfileResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhone()
+        );
     }
 
     // 관리자 리스트 조회
@@ -238,6 +248,33 @@ public class AdminService {
         return new AdminListResponse(
                 admins,
                 pageInfo
+        );
+    }
+
+    @Transactional
+    public ProfileResponse updateMyProfile(
+            Long adminId,
+            UpdateAdminRequest request
+    ) {
+
+        // 1. 로그인한 관리자 조회
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() ->
+                        new NotFoundException("관리자를 찾을 수 없습니다.")
+                );
+
+        // 2. 정보 수정
+        admin.update(
+                request.getName(),
+                request.getEmail(),
+                request.getPhone()
+        );
+
+        // 3. 응답 반환
+        return new ProfileResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhone()
         );
     }
 }
