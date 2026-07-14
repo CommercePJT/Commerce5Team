@@ -1,7 +1,11 @@
 package com.example.commercepjt.product.controller;
 
 import com.example.commercepjt.common.exception.UnauthorizedException;
-import com.example.commercepjt.product.dto.*;
+import com.example.commercepjt.product.dto.request.CreateProductRequest;
+import com.example.commercepjt.product.dto.request.UpdateProductRequest;
+import com.example.commercepjt.product.dto.request.UpdateProductStatusRequest;
+import com.example.commercepjt.product.dto.request.UpdateStockRequest;
+import com.example.commercepjt.product.dto.response.*;
 import com.example.commercepjt.product.entity.ProductStatus;
 import com.example.commercepjt.product.service.ProductService;
 import jakarta.validation.Valid;
@@ -67,7 +71,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/stock")
-    public ResponseEntity<ProductResponse> updateStock(
+    public ResponseEntity<UpdateProductStockResponse> updateStock(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
             @Valid @RequestBody UpdateStockRequest request
@@ -79,7 +83,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/status")
-    public ResponseEntity<ProductResponse> updateStatus(
+    public ResponseEntity<UpdateProductStatusResponse> updateStatus(
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductStatusRequest request

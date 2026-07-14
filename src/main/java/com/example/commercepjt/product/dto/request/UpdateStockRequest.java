@@ -1,7 +1,6 @@
-package com.example.commercepjt.product.dto;
+package com.example.commercepjt.product.dto.request;
 
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.example.commercepjt.product.dto;
+package com.example.commercepjt.product.dto.response;
 
 import com.example.commercepjt.product.entity.Product;
 import lombok.AllArgsConstructor;
@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProductDetailResponse {
 
-    private String name;
-    private String category;
-    private int price;
-    private int stock;
-    private String status;
-    private LocalDateTime createdAt;
-    private String adminName;
-    private String adminEmail;
+    private  final String name;
+    private final String category;
+    private final int price;
+    private final int stock;
+    private final String status;
+    private final LocalDateTime createdAt;
+    private final String adminName;
+    private final String adminEmail;
 
     public static ProductDetailResponse from(Product product) {
         return new ProductDetailResponse(
