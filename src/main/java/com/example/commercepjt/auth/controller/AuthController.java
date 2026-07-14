@@ -59,4 +59,5 @@ public class AuthController {
         // 로그아웃 성공 시 204 No Content 반환
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 }

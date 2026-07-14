@@ -11,6 +11,7 @@ import com.example.commercepjt.admin.dto.response.ProfileResponse;
 import com.example.commercepjt.admin.entity.AdminRole;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.service.AdminService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +26,14 @@ public class AdminController {
 
     // 내 프로필 조회
     @GetMapping("/me")
-    public ResponseEntity<ProfileResponse> getMyProfile() {
+    public ResponseEntity<ProfileResponse> getMyProfile(
+            HttpSession session
+    ) {
+
+        Long adminId = (Long) session.getAttribute("adminId");
 
         return ResponseEntity.ok(
-                adminService.getMyProfile()
+                adminService.getMyProfile(adminId)
         );
     }
 
