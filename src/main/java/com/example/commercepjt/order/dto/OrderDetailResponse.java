@@ -29,7 +29,7 @@ public class OrderDetailResponse {
                 order.getOrderNumber(),
                 order.getCustomer().getName(),
                 order.getCustomer().getEmail(),
-                order.getProduct().getProductName(),
+                order.getProduct().getName(),
                 order.getQuantity(),
                 order.getTotalPrice(),
                 order.getCreatedAt(),

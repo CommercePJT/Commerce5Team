@@ -15,11 +15,11 @@ public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long productId;
 
     // 상품명
-    @Column(name = "product_name", nullable = false, length = 100)
-    private String productName;
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
 
     // 카테고리
     @Column(name = "category", nullable = false)
@@ -46,14 +46,14 @@ public class Product extends BaseEntity {
 
     // ⚠️ 메서드명은 decreaseStock(int) / increaseStock(int)으로 통일
     public Product(
-            String productName,
+            String name,
             String category,
             int price,
             int stock,
             ProductStatus status,
             Admin admin
     ) {
-        this.productName = productName;
+        this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
@@ -62,7 +62,7 @@ public class Product extends BaseEntity {
     }
 
     public void update(String name, String category, int price) {
-        this.productName = name;
+        this.name = name;
         this.category = category;
         this.price = price;
     }
