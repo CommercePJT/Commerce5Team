@@ -1,6 +1,5 @@
 package com.example.commercepjt.product.controller;
 
-import com.example.commercepjt.common.exception.UnauthorizedException;
 import com.example.commercepjt.product.dto.request.CreateProductRequest;
 import com.example.commercepjt.product.dto.request.UpdateProductRequest;
 import com.example.commercepjt.product.dto.request.UpdateProductStatusRequest;
@@ -23,10 +22,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
-            @SessionAttribute(name = "adminId", required = false) Long adminId,
+            @SessionAttribute(name = "adminId") Long adminId,
             @Valid @RequestBody CreateProductRequest request
     ) {
-        checkLogin(adminId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(productService.createProduct(adminId, request));
@@ -37,7 +35,6 @@ public class ProductController {
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId
     ) {
-        checkLogin(adminId);
         return ResponseEntity.ok(productService.getProduct(productId));
     }
 
@@ -52,7 +49,6 @@ public class ProductController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) ProductStatus status
     ) {
-        checkLogin(adminId);
         return ResponseEntity.ok(
                 productService.getProducts(keyword, page, size, sortBy, direction, category, status)
         );
@@ -64,7 +60,6 @@ public class ProductController {
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductRequest request
     ) {
-        checkLogin(adminId);
         return ResponseEntity.ok(
                 productService.updateProduct(productId, request)
         );
@@ -76,7 +71,6 @@ public class ProductController {
             @PathVariable Long productId,
             @Valid @RequestBody UpdateStockRequest request
     ) {
-        checkLogin(adminId);
         return ResponseEntity.ok(
                 productService.updateStock(productId, request)
         );
@@ -88,7 +82,6 @@ public class ProductController {
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductStatusRequest request
     ) {
-        checkLogin(adminId);
         return ResponseEntity.ok(
                 productService.updateStatus(productId, request)
         );
@@ -99,14 +92,8 @@ public class ProductController {
             @SessionAttribute(name = "adminId", required = false) Long adminId,
             @PathVariable Long productId
     ) {
-        checkLogin(adminId);
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
     }
 
-    private void checkLogin(Long adminId) {
-        if (adminId == null) {
-            throw new UnauthorizedException("로그인이 필요합니다");
-        }
-    }
 }
