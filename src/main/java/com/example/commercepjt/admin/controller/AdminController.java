@@ -20,17 +20,6 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    // 관리자 회원가입 (가입 신청 -> 승인 대기 상태로 생성됨)
-    @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(
-            @Valid @RequestBody SignupRequest request
-    ) {
-        SignupResponse response = adminService.signup(request);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)   // 201 Created
-                .body(response);
-    }
 
     // ⚠ /me 매핑은 /{adminId} 보다 위에 선언할 것 (경로 충돌 방지)
 }
