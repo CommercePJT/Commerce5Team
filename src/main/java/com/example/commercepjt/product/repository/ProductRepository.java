@@ -2,6 +2,8 @@ package com.example.commercepjt.product.repository;
 
 import com.example.commercepjt.product.entity.Product;
 import com.example.commercepjt.product.entity.ProductStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                          @Param("category") String category,
                          @Param("status") ProductStatus status,
                          Pageable pageable);
+
+    boolean existsByName(String name);
 }

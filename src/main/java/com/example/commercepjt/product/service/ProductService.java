@@ -3,6 +3,7 @@ package com.example.commercepjt.product.service;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.dto.PageInfo;
+import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.product.dto.request.CreateProductRequest;
 import com.example.commercepjt.product.dto.response.*;
@@ -33,7 +34,9 @@ public class ProductService {
     public ProductResponse createProduct(Long adminId, CreateProductRequest request) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("관리자를 찾을 수 없습니다."));
-
+        if (productRepository.existsByName(request.getName())) {
+            throw new DuplicateException("이미 등록된 상품 이름입니다.");
+        }
         Product product = new Product(
                 request.getName(),
                 request.getCategory(),
@@ -93,6 +96,9 @@ public class ProductService {
             Long productId,
             UpdateProductRequest request
     ) {
+        if (productRepository.existsByName(request.getName())) {
+            throw new DuplicateException("이미 등록된 상품 이름입니다.");
+        }
         Product product = findProduct(productId);
 
         product.update(
