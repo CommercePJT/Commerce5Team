@@ -20,7 +20,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         HttpSession session = servletRequest.getSession(false);
 
         // 세션이 없거나 로그인 정보가 없으면 요청 차단
-        if (session == null || session.getAttribute("LOGIN_ADMIN") == null) {
+        if (session == null || session.getAttribute("adminId") == null) {
             // 로그인 하지 않은 상태의 요청이니깐 401 상태 코드를 반환
             servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             // 응답 타입 설정

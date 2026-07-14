@@ -3,6 +3,7 @@ package com.example.commercepjt.auth.service;
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.admin.service.AdminService;
 import com.example.commercepjt.auth.dto.LoginAdminInfo;
 import com.example.commercepjt.auth.dto.LoginAdminRequest;
 import com.example.commercepjt.auth.dto.SignupAdminRequest;
@@ -62,6 +63,9 @@ public class AuthService {
         Admin admin = adminRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
+        // 로그인 상태 검증
+        validateAdminStatus(admin.getStatus(), admin);
+
         // 비밀번호 검증
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword()))
@@ -93,9 +97,9 @@ public class AuthService {
 
     // 계정 상태에 따른 로그인 실패 분리
     // 로그인 가능한 관리자 상태인지 확인
-    private void validateAdminStatus(Admin admin) {
+    private void validateAdminStatus(AdminStatus status, Admin admin) {
 
-        switch (admin.getStatus()) {
+        switch (status) {
 
             // 정상 계정은 로그인 허용
             case ACTIVE -> {
