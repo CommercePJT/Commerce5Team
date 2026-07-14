@@ -19,7 +19,7 @@ public class ReviewDetailResponse {
 
     public static ReviewDetailResponse from(Review review) {
         return new ReviewDetailResponse(
-                review.getOrder().getProduct().getProductName(),
+                review.getOrder().getProduct().getName(),
                 review.getOrder().getCustomer().getName(),
                 review.getOrder().getCustomer().getEmail(),
                 review.getCreatedAt(),

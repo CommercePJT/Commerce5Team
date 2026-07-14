@@ -39,24 +39,24 @@ public class OrderController {
     }
 
     //주문상세조회
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getOrder(orderId));
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrder(id));
     }
 
     //주문상태수정
-    @PatchMapping("/{orderId}/status")
-    public ResponseEntity<Void> updateStatus(@PathVariable Long orderId,
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateStatus(@PathVariable Long id,
                                              @Valid @RequestBody UpdateOrderStatusRequest request) {
-        orderService.updateStatus(orderId, request.getStatus());
+        orderService.updateStatus(id, request.getStatus());
         return ResponseEntity.ok().build();
     }
 
     //주문취소
-    @PatchMapping("/{orderId}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable Long orderId,
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long id,
                                             @Valid @RequestBody CancelOrderRequest request) {
-        orderService.cancelOrder(orderId, request.getCancelReason());
+        orderService.cancelOrder(id, request.getCancelReason());
         return ResponseEntity.ok().build();
     }
 }

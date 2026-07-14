@@ -590,3 +590,60 @@
 | `SHIPPING`/`DELIVERED` 상태에서 취소 | 400 |
 | 이미 취소된 주문 재취소 | 400 |
 | 없는 ID | 404 |
+---
+
+## 7. 리뷰 정보 관리 (도전과제)
+
+| 기능 | 메서드 | URL             |
+|------|--------|-----------------|
+| 리뷰 생성 (테스트용) | POST | `/reviews`      |
+| 리뷰 리스트 조회 | GET | `/reviews`      |
+| 리뷰 상세 조회 | GET | `/reviews/{id}` |
+| 리뷰 삭제 | DELETE | `/reviews/{id}` |
+
+### 7-1. 리뷰 생성 — `POST /reviews`
+
+**Request**
+
+```json
+{
+  "orderId": 1,
+  "rating": 5,
+  "content": "배송 빠르고 좋아요!"
+}
+```
+
+| 필드 | 검증 규칙 |
+|------|-----------|
+| orderId | 필수, 존재하는 주문 |
+| rating | 필수, 1~5 |
+| content | 필수 |
+
+**Response** `201 Created` — 리뷰 ID, 주문번호, 고객명, 상품명, 평점, 내용, 작성일
+
+**에러**: 평점 범위 초과·내용 누락(400), 없는 주문(404)
+
+### 7-2. 리뷰 리스트 조회 — `GET /reviews`
+
+| 파라미터 | 설명 | 기본값 |
+|----------|------|--------|
+| keyword | 고객명 또는 상품명 검색 | - |
+| page | 페이지 번호 | 1 |
+| size | 페이지당 개수 | 10 |
+| sortBy | rating, createdAt | createdAt |
+| direction | asc / desc | desc |
+| rating | 평점 필터 (1~5) | - |
+
+**Response** `200 OK` — 리뷰 목록(ID, 주문번호, 고객명, 상품명, 평점, 내용, 작성일) + pageInfo
+
+### 7-3. 리뷰 상세 조회 — `GET /reviews/{Id}`
+
+**Response** `200 OK` — 상품명, 고객명, 고객 이메일, 작성일, 평점, 리뷰 내용
+
+**에러**: 없는 ID(404)
+
+### 7-4. 리뷰 삭제 — `DELETE /reviews/{Id}`
+
+**Response** `204 No Content`
+
+**에러**: 없는 ID(404)

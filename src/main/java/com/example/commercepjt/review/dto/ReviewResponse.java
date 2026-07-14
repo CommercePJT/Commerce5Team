@@ -23,7 +23,7 @@ public class ReviewResponse {
                 review.getReviewId(),
                 review.getOrder().getOrderNumber(),
                 review.getOrder().getCustomer().getName(),
-                review.getOrder().getProduct().getProductName(),
+                review.getOrder().getProduct().getName(),
                 review.getRating(),
                 review.getContent(),
                 review.getCreatedAt()

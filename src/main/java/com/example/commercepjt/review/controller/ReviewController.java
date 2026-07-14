@@ -34,15 +34,15 @@ public class ReviewController {
     }
 
 //리뷰상세조회
-    @GetMapping("/{reviewId}")
-    public ResponseEntity<ReviewDetailResponse> getReview(@PathVariable Long reviewId) {
-        return ResponseEntity.ok(reviewService.getReview(reviewId));
-    }
+@GetMapping("/{id}")
+public ResponseEntity<ReviewDetailResponse> getReview(@PathVariable Long id) {
+    return ResponseEntity.ok(reviewService.getReview(id));
+}
 
 //리뷰삭제
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
-        reviewService.deleteReview(reviewId);
-        return ResponseEntity.noContent().build();
-    }
+@DeleteMapping("/{id}")
+public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+    reviewService.deleteReview(id);
+    return ResponseEntity.noContent().build();
+}
 }
