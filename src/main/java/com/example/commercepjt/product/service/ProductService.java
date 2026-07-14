@@ -4,13 +4,11 @@ import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.NotFoundException;
-import com.example.commercepjt.product.dto.CreateProductRequest;
-import com.example.commercepjt.product.dto.ProductDetailResponse;
-import com.example.commercepjt.product.dto.ProductListResponse;
-import com.example.commercepjt.product.dto.ProductResponse;
-import com.example.commercepjt.product.dto.UpdateProductRequest;
-import com.example.commercepjt.product.dto.UpdateProductStatusRequest;
-import com.example.commercepjt.product.dto.UpdateStockRequest;
+import com.example.commercepjt.product.dto.request.CreateProductRequest;
+import com.example.commercepjt.product.dto.response.*;
+import com.example.commercepjt.product.dto.request.UpdateProductRequest;
+import com.example.commercepjt.product.dto.request.UpdateProductStatusRequest;
+import com.example.commercepjt.product.dto.request.UpdateStockRequest;
 import com.example.commercepjt.product.entity.Product;
 import com.example.commercepjt.product.entity.ProductStatus;
 import com.example.commercepjt.product.repository.ProductRepository;
@@ -106,7 +104,7 @@ public class ProductService {
         return toProductResponse(product);
     }
 
-    public ProductResponse updateStock(
+    public UpdateProductStockResponse updateStock(
             Long productId,
             UpdateStockRequest request
     ) {
@@ -114,10 +112,10 @@ public class ProductService {
 
         product.changeStock(request.getStock());
 
-        return toProductResponse(product);
+        return new UpdateProductStockResponse(product.getStock());
     }
 
-    public ProductResponse updateStatus(
+    public UpdateProductStatusResponse updateStatus(
             Long productId,
             UpdateProductStatusRequest request
     ) {
@@ -125,7 +123,7 @@ public class ProductService {
 
         product.changeStatus(request.getStatus());
 
-        return toProductResponse(product);
+        return new UpdateProductStatusResponse(product.getStatus());
     }
 
 
