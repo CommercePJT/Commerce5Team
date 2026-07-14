@@ -4,15 +4,12 @@ import com.example.commercepjt.customer.dto.CustomerListResponse;
 import com.example.commercepjt.customer.dto.CustomerResponse;
 import com.example.commercepjt.customer.dto.UpdateCustomerRequest;
 import com.example.commercepjt.customer.dto.UpdateCustomerStatusRequest;
+import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
@@ -30,19 +27,21 @@ public class CustomerController {
     // 고객 리스트 조회
     @GetMapping
     public ResponseEntity<CustomerListResponse> findAll(
+            @RequestParam(required = false) String keyword,              // 검색어 없어도 요청 가능
+            @RequestParam(required = false) CustomerStatus status,       // 상태 필터 없어도 요청 가능
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
         return ResponseEntity.ok(customerService.findAll(
-                page, size, sortBy, sortDir));
+                keyword, status, page, size, sortBy, sortDir));
     }
 
     // 고객 정보 수정
-    @PutMapping("/{customerId}")
+    @PatchMapping("/{customerId}")
     public ResponseEntity<CustomerResponse> update(
-            @Valid @PathVariable Long customerId,
-            @RequestBody UpdateCustomerRequest request
+            @PathVariable Long customerId,
+            @Valid @RequestBody UpdateCustomerRequest request
             ) {
         return ResponseEntity.ok(customerService.update(customerId, request));
     }
@@ -50,8 +49,8 @@ public class CustomerController {
     // 고객 상태 변경
     @PatchMapping("/{customerId}/status")
     public ResponseEntity<CustomerResponse> updateStatus(
-            @Valid @PathVariable Long customerId,
-            @RequestBody UpdateCustomerStatusRequest request) {
+            @PathVariable Long customerId,
+            @Valid @RequestBody UpdateCustomerStatusRequest request) {
         return ResponseEntity.ok(customerService.updateStatus(customerId, request));
     }
 
