@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import java.util.List;
 
@@ -69,5 +71,39 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다"));
         reviewRepository.delete(review);
+    }
+//상품별 리뷰 통계 + 최신리뷰 3개
+    @Transactional(readOnly = true)
+    public ProductReviewResponse getProductReviews(Long productId) {
+        // 1. 평균 평점 (리뷰 없으면 null → 0.0 처리, 소수점 1자리 반올림)
+        Double average = reviewRepository.findAverageRating(productId);
+        double averageRating = (average == null) ? 0.0
+                : Math.round(average * 10) / 10.0;
+
+        // 2. 별점별 개수: [rating, count] 목록 → Map으로 변환 (없는 별점은 0)
+        Map<Integer, Long> ratingCounts = new LinkedHashMap<>();
+        for (int i = 5; i >= 1; i--) {
+            ratingCounts.put(i, 0L);
+        }
+        for (Object[] row : reviewRepository.countByRating(productId)) {
+            ratingCounts.put((Integer) row[0], (Long) row[1]);
+        }
+
+        // 3. 전체 리뷰 개수 = 별점별 개수의 합
+        long totalCount = ratingCounts.values().stream()
+                .mapToLong(Long::longValue).sum();
+
+        // 4. 최신 리뷰 3개
+        List<ProductReviewResponse.RecentReview> recentReviews =
+                reviewRepository.findTop3ByOrderProductProductIdOrderByCreatedAtDesc(productId)
+                        .stream()
+                        .map(r -> new ProductReviewResponse.RecentReview(
+                                r.getOrder().getCustomer().getName(),
+                                r.getRating(),
+                                r.getContent(),
+                                r.getCreatedAt()))
+                        .toList();
+
+        return new ProductReviewResponse(averageRating, totalCount, ratingCounts, recentReviews);
     }
 }
