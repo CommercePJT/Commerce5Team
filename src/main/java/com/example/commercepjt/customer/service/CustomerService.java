@@ -11,13 +11,14 @@ import com.example.commercepjt.customer.entity.Customer;
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.commercepjt.customer.repository.CustomerSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,38 +39,90 @@ public class CustomerService {
     // 고객 리스트 조회
     @Transactional(readOnly = true)
     public CustomerListResponse findAll(
-            int page, int size, String sortBy, String sortDir) {
+            String keyword,
+            CustomerStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    ) {
 
-        Sort sort;
-        // 사용자가 요청한 정렬 방향에 따라 오름차순 또는 내림차순 설정
-        if (sortDir.equalsIgnoreCase("asc")) {
-            sort = Sort.by(sortBy).ascending();
-        } else {
-            sort = Sort.by(sortBy).descending();
+        // 페이지 번호는 1 이상이어야 한다.
+        if (page < 1) {
+            throw new IllegalArgumentException("페이지 번호는 1 이상이어야 합니다.");
         }
 
+        // 페이지당 조회 개수는 1 이상이어야 한다.
+        if (size < 1) {
+            throw new IllegalArgumentException("페이지당 개수는 1 이상이어야 합니다.");
+        }
+
+        List<String> allowedSortFields =
+                List.of("name", "email", "createdAt");
+
+        if (!allowedSortFields.contains(sortBy)) {
+            throw new IllegalArgumentException("정렬 기준은 name, email, createdAt 중 하나여야 합니다.");          // sortBy 검증 추가
+        }
+
+        Sort sort;
+
+        // 사용자가 요청한 방향에 따라 정렬 조건을 만든다.
+        if (sortDir.equalsIgnoreCase("asc")) {
+            sort = Sort.by(sortBy).ascending();
+
+        } else if (sortDir.equalsIgnoreCase("desc")) {
+            sort = Sort.by(sortBy).descending();
+
+        } else {
+            throw new IllegalArgumentException("정렬 방향은 asc 또는 desc만 가능합니다.");
+        }
+
+        // 클라이언트의 1페이지를 Spring의 0페이지로 변환한다.
         Pageable pageable = PageRequest.of(
-                page - 1, size, sort);
+                page - 1,
+                size,
+                sort
+        );
+
+        // 이름·이메일 검색 조건과 상태 필터를 조합한다.
+        Specification<Customer> specification =
+                Specification
+                        .where(
+                                CustomerSpecification.keyword(keyword)
+                        )
+                        .and(
+                                CustomerSpecification.status(status)
+                        );
+
+        // 검색 조건, 상태 필터, 페이징, 정렬을 모두 적용하여 조회한다.
+        Page<Customer> customerPage =
+                customerRepository.findAll(
+                        specification,
+                        pageable
+                );
 
         List<CustomerResponse> responseList = new ArrayList<>();
 
-        // 페이지 정보와 함께 고객 목록 조회
-        Page<Customer> customerPage = customerRepository.findAll(pageable);
+        // Customer Entity 목록을 응답 DTO 목록으로 변환한다.
+        for (Customer customer : customerPage.getContent()) {
 
-
-        for(Customer customer : customerPage.getContent()) {
             CustomerResponse customerResponse = new CustomerResponse(customer);
+
             responseList.add(customerResponse);
         }
 
-        // 페이지 정보를 PageInfo DTO에 저장
+        // 페이징 정보를 응답 DTO에 담는다.
         PageInfo pageInfo = new PageInfo(
                 customerPage.getNumber() + 1,
                 customerPage.getSize(),
                 customerPage.getTotalElements(),
                 customerPage.getTotalPages()
         );
-        return new CustomerListResponse(responseList, pageInfo);
+
+        return new CustomerListResponse(
+                responseList,
+                pageInfo
+        );
     }
 
     // 고객 정보 수정
@@ -113,6 +166,7 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
+    // 고객이 있으면 Customer 반환, 없으면 404 예외
     private Customer customerOrElseThrow(Long customerId) {
         return customerRepository.findById(customerId)
                 .orElseThrow(
