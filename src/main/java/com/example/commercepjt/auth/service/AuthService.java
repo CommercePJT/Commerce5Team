@@ -4,10 +4,7 @@ import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.admin.service.AdminService;
-import com.example.commercepjt.auth.dto.LoginAdminInfo;
-import com.example.commercepjt.auth.dto.LoginAdminRequest;
-import com.example.commercepjt.auth.dto.SignupAdminRequest;
-import com.example.commercepjt.auth.dto.SignupAdminResponse;
+import com.example.commercepjt.auth.dto.*;
 import com.example.commercepjt.auth.session.SessionConst;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.DuplicateException;
@@ -119,5 +116,35 @@ public class AuthService {
             // 계정 비활성화 상태
             case INACTIVE ->throw new ForbiddenException("비활성화된 계정입니다.");
         }
+    }
+
+
+    @Transactional
+    public void changePassword(
+            Long adminId,
+            UpdatePasswordRequest request
+    ) {
+
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() ->
+                        new UnauthorizedException("관리자를 찾을 수 없습니다.")
+                );
+
+        // 2. 현재 비밀번호 확인
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                admin.getPassword()
+        )) {
+
+            throw new UnauthorizedException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 새 비밀번호 암호화
+        String encodedPassword =
+                passwordEncoder.encode(request.getNewPassword());
+
+        // 4. 비밀번호 변경
+        admin.changePassword(encodedPassword);
     }
 }
