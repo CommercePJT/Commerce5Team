@@ -65,7 +65,7 @@ VALUES
 INSERT INTO customers (name, email, phone, status, created_at, modified_at)
 VALUES
 -- 활성 고객 (6명: 리스트 조회·페이징·검색 테스트용)
-    ('최정이', 'thal070909@gmail.com', '010-5555-1111', 'ACTIVE', NOW(), NOW()),
+    ('최정이', 'wjddl@test.com', '010-5555-1111', 'ACTIVE', NOW(), NOW()),
     ('임경식', 'rudtlr@test.com', '010-5555-2222', 'ACTIVE', NOW(), NOW()),
     ('신형탁', 'anseksthr@test.com', '010-5555-3333', 'ACTIVE', NOW(), NOW()),
     ('최정윤', 'wjddbs@test.com', '010-5555-4444', 'ACTIVE', NOW(), NOW()),
@@ -76,7 +76,7 @@ VALUES
     ('박휴면', 'dormant@test.com', '010-6666-2222', 'INACTIVE', NOW(), NOW()),
 -- 정지 고객 (2명)
     ('김정지', 'kim01@test.com', '010-4444-1111', 'SUSPENDED', NOW(), NOW()),
-    ('김블랙', 'blacklist@test.com', '010-4444-2222', 'SUSPENDED', NOW(), NOW()),
+    ('김블랙', 'blacklist@test.com', '010-4444-2222', 'SUSPENDED', NOW(), NOW());
 
 -- =========================
 -- Products
@@ -96,3 +96,12 @@ INSERT INTO reviews (rating, content, order_id, created_at, modified_at)
 VALUES (5, '배송 빠르고 좋아요!', 1, NOW(), NOW()),
        (4, '만족합니다', 1, NOW(), NOW()),
        (2, '생각보다 별로예요', 1, NOW(), NOW());
+--{
+"name": "장수",--9
+  "email": "a123@aaa.com",
+  "password": "12345678",
+  "phone": "010-6634-1666",
+  "role": "SUPER_ADMIN"
+}
+      "email": "a121@aaa.com",
+  "password": "12345678",

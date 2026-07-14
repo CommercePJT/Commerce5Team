@@ -38,7 +38,8 @@ public class AdminService {
         return new ProfileResponse(
                 admin.getName(),
                 admin.getEmail(),
-                admin.getPhone());
+                admin.getPhone(),
+                admin.getModifiedAt());
     }
 
     // 관리자 리스트 조회
