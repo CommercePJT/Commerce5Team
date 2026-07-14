@@ -18,7 +18,7 @@ public class Product extends BaseEntity {
     private Long productId;
 
     // 상품명
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
     // 카테고리
