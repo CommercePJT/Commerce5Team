@@ -11,6 +11,7 @@ import com.example.commercepjt.auth.dto.response.SignupAdminResponse;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.ForbiddenException;
+import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -44,15 +45,15 @@ public class AuthService {
         Admin savedAdmin = adminRepository.save(admin);
 
         // 저장된 Admin Entity를 Response DTO로 변환하여 반환
-        return SignupAdminResponse.from(savedAdmin);
+        return new SignupAdminResponse(savedAdmin);
     }
 
     // 로그인
     @Transactional(readOnly = true)
     public LoginAdminInfoResponse login(LoginAdminRequest request) {
         // 이메일로 관리자 조회
-        Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
+        Admin admin = adminRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
         // 비밀번호 검증
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword())) {
@@ -92,21 +93,21 @@ public class AuthService {
             case PENDING -> throw new ForbiddenException("계정 승인 대기 중입니다.");
             // 관리자 신청 거부 상태
             case REJECTED -> throw new ForbiddenException(
-                    "관리자 신청이 거부되었습니다."
-                    + "거부 날짜: " + admin.getRejectedAt()
-                    + "거부 사유: " + admin.getRejectReason());
+                    "관리자 신청이 거부되었습니다. "
+                            + "거부 날짜: " + admin.getRejectedAt() + ", "
+                            + "거부 사유: " + admin.getRejectReason());
             // 계정 정지 상태
             case SUSPENDED -> throw new ForbiddenException("정지된 계정입니다.");
             // 계정 비활성화 상태
             case INACTIVE ->throw new ForbiddenException("비활성화된 계정입니다.");
         }
     }
-
+    //비밀번호변경
     @Transactional
     public void changePassword(Long adminId, UpdatePasswordRequest request) {
         // 1. 관리자 조회
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new UnauthorizedException("관리자를 찾을 수 없습니다."));
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
         // 2. 현재 비밀번호 확인
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
