@@ -11,6 +11,7 @@ import com.example.commercepjt.admin.entity.AdminStatus;
 import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.admin.repository.AdminSpecification;
 import com.example.commercepjt.common.dto.PageInfo;
+import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
         // 2. 응답 반환
-        return new ProfileResponse(
-                admin.getName(),
-                admin.getEmail(),
-                admin.getPhone(),
-                admin.getModifiedAt());
+        return new ProfileResponse(admin);
     }
 
     // 관리자 리스트 조회
@@ -88,13 +85,19 @@ public class AdminService {
         // 1. 로그인한 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
-        // 2. 정보 수정
+
+        // 2. 다른 관리자가 이미 사용 중인 이메일인지 확인 (본인 제외)
+        if (adminRepository.existsByEmailAndIdNot(request.getEmail(), adminId)) {
+            throw new DuplicateException("이미 사용 중인 이메일입니다.");
+        }
+
+        // 3. 정보 수정
         admin.update(
                 request.getName(),
                 request.getEmail(),
                 request.getPhone());
 
-        // 3. 응답 반환
+        // 4. 응답 반환
        return new ProfileResponse(admin);
     }
 
@@ -105,13 +108,19 @@ public class AdminService {
         // 1. 수정할 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
-        // 2. Entity 수정 메서드 호출
+
+        // 2. 다른 관리자가 이미 사용 중인 이메일인지 확인
+        if (adminRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+            throw new DuplicateException("이미 사용 중인 이메일입니다.");
+        }
+
+        // 3. Entity 수정 메서드 호출
         admin.update(
                 request.getName(),
                 request.getEmail(),
                 request.getPhone());
 
-        // 3. DTO 변환 후 반환
+        // 4. DTO 변환 후 반환
         return new AdminResponse(admin);
     }
 
