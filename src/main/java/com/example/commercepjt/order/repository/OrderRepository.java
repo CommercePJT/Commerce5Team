@@ -22,5 +22,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     boolean existsByProduct_ProductId(Long productId);
 
-
+    // 관리자 삭제 전 처리 주문 존재 여부 확인
+    boolean existsByAdminId(Long adminId);
 }
