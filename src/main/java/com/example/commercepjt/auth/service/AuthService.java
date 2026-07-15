@@ -29,8 +29,10 @@ public class AuthService {
     // 회원가입 = admin 생성
     @Transactional
     public SignupAdminResponse signup(SignupAdminRequest request) {
-        // 이메일 중복확인
+        // 이메일 중복 확인
         validateDuplicateEmail(request.getEmail());
+        // 전화번호 중복 확인
+        validateDuplicatePhone(request.getPhone());
         // 사용자가 입력한 원본 비밀번호를 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         // 관리자(Admin) 객체 생성 (상태(status)는 생성자에서 자동으로 PENDING)
@@ -72,11 +74,20 @@ public class AuthService {
         session.invalidate();
     }
 
+    // 메서드
+
     // 이메일 중복 검사 메서드
     private void validateDuplicateEmail(String email) {
         // 이미 존재하는 이메일이면 예외 발생
         if (adminRepository.existsByEmail(email)) {
             throw new DuplicateException("이미 사용 중인 이메일 입니다.");
+        }
+    }
+
+    // 전화번호 중복 검사 메서드
+    private void validateDuplicatePhone(String phone) {
+        if (adminRepository.existsByPhone(phone)) {
+            throw new DuplicateException("이미 사용 중인 전화번호 입니다.");
         }
     }
 
