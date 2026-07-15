@@ -11,6 +11,7 @@ import com.example.commercepjt.customer.entity.Customer;
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.repository.CustomerRepository;
 import com.example.commercepjt.customer.repository.CustomerSpecification;
+import com.example.commercepjt.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
@@ -101,6 +103,11 @@ public class CustomerService {
     @Transactional
     public void delete(Long customerId) {
         Customer customer = customerOrElseThrow(customerId);
+
+        // 주문 이력이 있는 고객은 삭제 불가 (FK 제약 위반 방지)
+        if (orderRepository.existsByCustomerCustomerId(customerId)) {
+            throw new DuplicateException("주문 이력이 있는 고객은 삭제할 수 없습니다.");
+        }
 
         customerRepository.delete(customer);
     }
