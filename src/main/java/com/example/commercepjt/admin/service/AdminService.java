@@ -200,7 +200,7 @@ public class AdminService {
 
     // 관리자 삭제
     @Transactional
-    public void deleteAdmin(Long id) {
+    public void delete(Long id) {
 
         // 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
