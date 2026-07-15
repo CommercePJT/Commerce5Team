@@ -6,9 +6,8 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * 상품 상세 조회 응답 - 리스트 항목 + 등록 관리자 이메일
- */
+//상품 상세 조회 응답 - 리스트 항목 + 등록 관리자 이메일
+
 @Getter
 @AllArgsConstructor
 public class ProductDetailResponse {

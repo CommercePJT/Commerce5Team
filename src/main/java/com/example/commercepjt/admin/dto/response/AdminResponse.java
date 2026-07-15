@@ -6,19 +6,19 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/** 관리자 리스트/상세 조회 응답 항목 */
+//관리자 리스트,상세 조회 응답 항목
 @Getter
 @AllArgsConstructor
 public class AdminResponse {
 
-    private Long id;
-    private String name;
-    private String email;
-    private String phone;
-    private String role;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime approvedAt;
+    private final Long id;
+    private final String name;
+    private final String email;
+    private final String phone;
+    private final String role;
+    private final String status;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime approvedAt;
 
     public AdminResponse(Admin admin) {
         this.id = admin.getId();

@@ -1,11 +1,17 @@
 package com.example.commercepjt.order.controller;
 
-import com.example.commercepjt.order.dto.*;
+import com.example.commercepjt.common.config.LoginAdmin;
+import com.example.commercepjt.order.dto.request.CancelOrderRequest;
+import com.example.commercepjt.order.dto.request.CreateOrderRequest;
+import com.example.commercepjt.order.dto.request.UpdateOrderStatusRequest;
+import com.example.commercepjt.order.dto.response.CreateOrderResponse;
+import com.example.commercepjt.order.dto.response.OrderDetailResponse;
+import com.example.commercepjt.order.dto.response.OrderListResponse;
 import com.example.commercepjt.order.entity.OrderStatus;
 import com.example.commercepjt.order.service.OrderService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,46 +23,50 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    //cs주문생성
+    // CS 주문 생성
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request,
-                                                           HttpSession session) {
-        Long loginAdminId = (Long) session.getAttribute("adminId");
-        CreateOrderResponse response = orderService.createOrder(request, loginAdminId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<CreateOrderResponse> create(
+            @LoginAdmin Long adminId,
+            @Valid @RequestBody CreateOrderRequest request) {
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.create(request, adminId));
     }
 
-    //주문리스트조회
+    // 주문 리스트 조회
     @GetMapping
-    public ResponseEntity<OrderListResponse> getOrders(
+    public ResponseEntity<OrderListResponse> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) OrderStatus status) {
-        return ResponseEntity.ok(orderService.getOrders(keyword, page, size, sortBy, direction, status));
+            @RequestParam(required = false) OrderStatus status,
+            Pageable pageable) {
+
+        return ResponseEntity.ok(orderService.findAll(keyword, status, pageable));
     }
 
-    //주문상세조회
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getOrder(id));
+    // 주문 상세 조회
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDetailResponse> findOne(
+            @PathVariable Long orderId) {
+
+        return ResponseEntity.ok(orderService.findOne(orderId));
     }
 
-    //주문상태수정
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateStatus(@PathVariable Long id,
-                                             @Valid @RequestBody UpdateOrderStatusRequest request) {
-        orderService.updateStatus(id, request.getStatus());
+    // 주문 상태 수정
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long orderId,
+            @Valid @RequestBody UpdateOrderStatusRequest request) {
+
+        orderService.updateStatus(orderId, request.getStatus());
         return ResponseEntity.ok().build();
     }
 
-    //주문취소
-    @PatchMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable Long id,
-                                            @Valid @RequestBody CancelOrderRequest request) {
-        orderService.cancelOrder(id, request.getCancelReason());
-        return ResponseEntity.ok().build();
+    // 주문 취소
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<Void> cancel(
+            @PathVariable Long orderId,
+            @Valid @RequestBody CancelOrderRequest request) {
+
+        orderService.cancel(orderId, request.getCancelReason());
+        return ResponseEntity.noContent().build();
     }
 }

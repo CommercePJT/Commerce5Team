@@ -6,9 +6,8 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * 상품 등록/리스트 조회 응답 항목
- */
+//상품 등록/리스트 조회 응답 항목
+
 @Getter
 @AllArgsConstructor
 public class ProductResponse {
@@ -23,6 +22,7 @@ public class ProductResponse {
     private final String adminName;
 
     public static ProductResponse from(Product product) {
+
         return new ProductResponse(
                 product.getProductId(),
                 product.getName(),

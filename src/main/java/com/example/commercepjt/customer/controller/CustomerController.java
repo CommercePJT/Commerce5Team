@@ -1,13 +1,14 @@
 package com.example.commercepjt.customer.controller;
 
-import com.example.commercepjt.customer.dto.CustomerListResponse;
-import com.example.commercepjt.customer.dto.CustomerResponse;
-import com.example.commercepjt.customer.dto.UpdateCustomerRequest;
-import com.example.commercepjt.customer.dto.UpdateCustomerStatusRequest;
+import com.example.commercepjt.customer.dto.response.CustomerListResponse;
+import com.example.commercepjt.customer.dto.response.CustomerResponse;
+import com.example.commercepjt.customer.dto.request.UpdateCustomerRequest;
+import com.example.commercepjt.customer.dto.request.UpdateCustomerStatusRequest;
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,9 @@ public class CustomerController {
 
     // 고객 상세 조회
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerResponse> findOne(@PathVariable Long customerId) {
+    public ResponseEntity<CustomerResponse> findOne(
+            @PathVariable Long customerId) {
+
         return ResponseEntity.ok(customerService.findOne(customerId));
     }
 
@@ -29,12 +32,10 @@ public class CustomerController {
     public ResponseEntity<CustomerListResponse> findAll(
             @RequestParam(required = false) String keyword,              // 검색어 없어도 요청 가능
             @RequestParam(required = false) CustomerStatus status,       // 상태 필터 없어도 요청 가능
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            Pageable pageable) {
+
         return ResponseEntity.ok(customerService.findAll(
-                keyword, status, page, size, sortBy, sortDir));
+                keyword, status,pageable));
     }
 
     // 고객 정보 수정
@@ -56,7 +57,9 @@ public class CustomerController {
 
     // 고객 삭제
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> delete(@PathVariable Long customerId) {
+    public ResponseEntity<Void> delete(
+            @PathVariable Long customerId)
+    {
         customerService.delete(customerId);
         return ResponseEntity.noContent().build();
     }

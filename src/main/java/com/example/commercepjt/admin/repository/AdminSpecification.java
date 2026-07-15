@@ -15,20 +15,11 @@ public class AdminSpecification {
             if (keyword == null || keyword.isBlank()) {
                 return null;
             }
-
             return criteriaBuilder.or(
-                    criteriaBuilder.like(
-                            root.get("name"),
-                            "%" + keyword + "%"
-                    ),
-                    criteriaBuilder.like(
-                            root.get("email"),
-                            "%" + keyword + "%"
-                    )
-
+                    criteriaBuilder.like(root.get("name"),"%" + keyword + "%"),
+                    criteriaBuilder.like(root.get("email"),"%" + keyword + "%")
             );
         };
-
     }
 
     // 역할 필터
@@ -39,11 +30,7 @@ public class AdminSpecification {
             if (role == null) {
                 return null;
             }
-
-            return criteriaBuilder.equal(
-                    root.get("role"),
-                    role
-            );
+            return criteriaBuilder.equal(root.get("role"),role);
         };
     }
 
@@ -56,10 +43,7 @@ public class AdminSpecification {
                 return null;
             }
 
-            return criteriaBuilder.equal(
-                    root.get("status"),
-                    status
-            );
+            return criteriaBuilder.equal(root.get("status"),status);
         };
     }
 }
