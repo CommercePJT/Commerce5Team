@@ -1,9 +1,6 @@
 package com.example.commercepjt.product.dto.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
@@ -18,6 +15,6 @@ public class UpdateProductRequest {
     private String category;
 
     @Max(value = 100000000, message = "가격은 1억 원을 넘을 수 없습니다.")
-    @PositiveOrZero(message = "수정할 가격은 0원 이상 이어야합니다.")
+    @Positive(message = "수정할 가격은 0원 이상 이어야합니다.")
     private int price;
 }
