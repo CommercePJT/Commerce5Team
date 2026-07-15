@@ -43,6 +43,11 @@ public class CustomerService {
         //2. 조건에 맞는 고객 조회 (페이징 적용)
         Page<Customer> customerPage = customerRepository.findAll(specification, pageable);
 
+        // 조건에 맞는 고객이 없으면 404
+        if (customerPage.isEmpty()) {
+            throw new NotFoundException("조건에 맞는 고객이 존재하지 않습니다.");
+        }
+
         //3. Entity -> DTO 변환
         List<CustomerResponse> customers = customerPage.getContent().stream()
                 .map(CustomerResponse::new)
@@ -111,6 +116,7 @@ public class CustomerService {
 
         customerRepository.delete(customer);
     }
+
 
     // 고객이 있으면 Customer 반환, 없으면 404 예외
     private Customer customerOrElseThrow(Long customerId) {
