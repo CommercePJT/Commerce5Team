@@ -7,10 +7,7 @@ import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.customer.entity.Customer;
 import com.example.commercepjt.customer.repository.CustomerRepository;
 import com.example.commercepjt.order.dto.request.CreateOrderRequest;
-import com.example.commercepjt.order.dto.response.CreateOrderResponse;
-import com.example.commercepjt.order.dto.response.OrderDetailResponse;
-import com.example.commercepjt.order.dto.response.OrderListResponse;
-import com.example.commercepjt.order.dto.response.OrderResponse;
+import com.example.commercepjt.order.dto.response.*;
 import com.example.commercepjt.order.entity.Order;
 import com.example.commercepjt.order.entity.OrderStatus;
 import com.example.commercepjt.order.repository.OrderRepository;
@@ -86,11 +83,13 @@ public class OrderService {
 
     // 주문 상태 수정
     @Transactional
-    public void updateStatus(Long orderId, OrderStatus status) {
+    public UpdateOrderStatusResponse updateStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new NotFoundException("주문을 찾을 수 없습니다."));
 
         order.updateStatus(status);
+
+        return new UpdateOrderStatusResponse(order);
     }
 
     // 주문 취소
