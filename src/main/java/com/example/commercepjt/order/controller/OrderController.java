@@ -7,6 +7,7 @@ import com.example.commercepjt.order.dto.request.UpdateOrderStatusRequest;
 import com.example.commercepjt.order.dto.response.CreateOrderResponse;
 import com.example.commercepjt.order.dto.response.OrderDetailResponse;
 import com.example.commercepjt.order.dto.response.OrderListResponse;
+import com.example.commercepjt.order.dto.response.UpdateOrderStatusResponse;
 import com.example.commercepjt.order.entity.OrderStatus;
 import com.example.commercepjt.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -52,12 +53,11 @@ public class OrderController {
 
     // 주문 상태 수정
     @PatchMapping("/{orderId}/status")
-    public ResponseEntity<Void> updateStatus(
+    public ResponseEntity<UpdateOrderStatusResponse> updateStatus(
             @PathVariable Long orderId,
             @Valid @RequestBody UpdateOrderStatusRequest request) {
 
-        orderService.updateStatus(orderId, request.getStatus());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(orderService.updateStatus(orderId, request.getStatus()));
     }
 
     // 주문 취소
