@@ -35,17 +35,18 @@ public class AdminService {
 
     // 내 프로필 조회
     @Transactional(readOnly = true)
-    public ProfileResponse getMyProfile(Long adminId) {
+    public ProfileResponse findMyProfile(Long adminId) {
         // 1. 로그인한 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
+
         // 2. 응답 반환
         return new ProfileResponse(admin);
     }
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public AdminListResponse getAdmins(
+    public AdminListResponse findAll(
             String keyword,
             AdminRole role,
             AdminStatus status,
@@ -74,7 +75,7 @@ public class AdminService {
 
     //관리자 상세 조회
     @Transactional(readOnly = true)
-    public AdminResponse getAdmin(Long id) {
+    public AdminResponse findOne(Long id) {
 
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
@@ -107,7 +108,7 @@ public class AdminService {
 
     // 관리자 정보 수정
     @Transactional
-    public AdminResponse updateAdmin(Long id, UpdateAdminRequest request) {
+    public AdminResponse update(Long id, UpdateAdminRequest request) {
 
         // 1. 수정할 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
@@ -158,7 +159,7 @@ public class AdminService {
 
     // 관리자 승인
     @Transactional
-    public ApproveResponse approveAdmin(Long id) {
+    public ApproveResponse approve(Long id) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
@@ -177,7 +178,7 @@ public class AdminService {
 
     // 관리자 거부
     @Transactional
-    public RejectResponse rejectAdmin(Long id, RejectRequest request) {
+    public RejectResponse reject(Long id, RejectRequest request) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));

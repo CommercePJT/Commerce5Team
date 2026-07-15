@@ -1,9 +1,8 @@
 package com.example.commercepjt.admin.dto.request;
 
 import com.example.commercepjt.admin.entity.AdminRole;
-import lombok.Getter;
-
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 @Getter
 public class UpdateRoleRequest {

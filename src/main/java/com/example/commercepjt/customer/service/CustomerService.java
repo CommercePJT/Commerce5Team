@@ -11,6 +11,7 @@ import com.example.commercepjt.customer.entity.Customer;
 import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.repository.CustomerRepository;
 import com.example.commercepjt.customer.repository.CustomerSpecification;
+import com.example.commercepjt.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
@@ -40,6 +42,11 @@ public class CustomerService {
                         .and(CustomerSpecification.status(status));
         //2. 조건에 맞는 고객 조회 (페이징 적용)
         Page<Customer> customerPage = customerRepository.findAll(specification, pageable);
+
+        // 조건에 맞는 고객이 없으면 404
+        if (customerPage.isEmpty()) {
+            throw new NotFoundException("조건에 맞는 고객이 존재하지 않습니다.");
+        }
 
         //3. Entity -> DTO 변환
         List<CustomerResponse> customers = customerPage.getContent().stream()
@@ -102,8 +109,14 @@ public class CustomerService {
     public void delete(Long customerId) {
         Customer customer = customerOrElseThrow(customerId);
 
+        // 주문 이력이 있는 고객은 삭제 불가 (FK 제약 위반 방지)
+        if (orderRepository.existsByCustomerCustomerId(customerId)) {
+            throw new DuplicateException("주문 이력이 있는 고객은 삭제할 수 없습니다.");
+        }
+
         customerRepository.delete(customer);
     }
+
 
     // 고객이 있으면 Customer 반환, 없으면 404 예외
     private Customer customerOrElseThrow(Long customerId) {

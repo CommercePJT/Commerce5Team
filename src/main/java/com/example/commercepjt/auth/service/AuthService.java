@@ -11,6 +11,7 @@ import com.example.commercepjt.auth.dto.response.SignupAdminResponse;
 import com.example.commercepjt.common.config.PasswordEncoder;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.ForbiddenException;
+import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.common.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,10 @@ public class AuthService {
     // 회원가입 = admin 생성
     @Transactional
     public SignupAdminResponse signup(SignupAdminRequest request) {
-        // 이메일 중복확인
+        // 이메일 중복 확인
         validateDuplicateEmail(request.getEmail());
+        // 전화번호 중복 확인
+        validateDuplicatePhone(request.getPhone());
         // 사용자가 입력한 원본 비밀번호를 암호화
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         // 관리자(Admin) 객체 생성 (상태(status)는 생성자에서 자동으로 PENDING)
@@ -44,15 +47,15 @@ public class AuthService {
         Admin savedAdmin = adminRepository.save(admin);
 
         // 저장된 Admin Entity를 Response DTO로 변환하여 반환
-        return SignupAdminResponse.from(savedAdmin);
+        return new SignupAdminResponse(savedAdmin);
     }
 
     // 로그인
     @Transactional(readOnly = true)
     public LoginAdminInfoResponse login(LoginAdminRequest request) {
         // 이메일로 관리자 조회
-        Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
+        Admin admin = adminRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다."));
         // 비밀번호 검증
         // 입력 비밀번호와 암호화된 비밀번호 비교
         if (!passwordEncoder.matches(request.getPassword(),admin.getPassword())) {
@@ -71,11 +74,20 @@ public class AuthService {
         session.invalidate();
     }
 
+    // 메서드
+
     // 이메일 중복 검사 메서드
     private void validateDuplicateEmail(String email) {
         // 이미 존재하는 이메일이면 예외 발생
         if (adminRepository.existsByEmail(email)) {
             throw new DuplicateException("이미 사용 중인 이메일 입니다.");
+        }
+    }
+
+    // 전화번호 중복 검사 메서드
+    private void validateDuplicatePhone(String phone) {
+        if (adminRepository.existsByPhone(phone)) {
+            throw new DuplicateException("이미 사용 중인 전화번호 입니다.");
         }
     }
 
@@ -92,21 +104,21 @@ public class AuthService {
             case PENDING -> throw new ForbiddenException("계정 승인 대기 중입니다.");
             // 관리자 신청 거부 상태
             case REJECTED -> throw new ForbiddenException(
-                    "관리자 신청이 거부되었습니다."
-                    + "거부 날짜: " + admin.getRejectedAt()
-                    + "거부 사유: " + admin.getRejectReason());
+                    "관리자 신청이 거부되었습니다. "
+                            + "거부 날짜: " + admin.getRejectedAt() + ", "
+                            + "거부 사유: " + admin.getRejectReason());
             // 계정 정지 상태
             case SUSPENDED -> throw new ForbiddenException("정지된 계정입니다.");
             // 계정 비활성화 상태
             case INACTIVE ->throw new ForbiddenException("비활성화된 계정입니다.");
         }
     }
-
+    //비밀번호변경
     @Transactional
     public void changePassword(Long adminId, UpdatePasswordRequest request) {
         // 1. 관리자 조회
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new UnauthorizedException("관리자를 찾을 수 없습니다."));
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundException("관리자를 찾을 수 없습니다."));
 
         // 2. 현재 비밀번호 확인
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {

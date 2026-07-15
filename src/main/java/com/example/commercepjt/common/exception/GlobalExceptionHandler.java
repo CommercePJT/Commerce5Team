@@ -1,5 +1,6 @@
 package com.example.commercepjt.common.exception;
 
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -56,6 +57,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMessageNotReadable(HttpMessageNotReadableException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400,"요청 본문의 형식 또는 값이 올바르지 않습니다."));
+    }
+
+    // 400 - 존재하지 않는 필드로 정렬 요청 (ex: ?sort = asdf)
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErrorResponse> handlePropertyReference(PropertyReferenceException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "존재하지 않는 정렬 기준입니다: " + e.getPropertyName()));
     }
 
     // 401 - 인증 실패
