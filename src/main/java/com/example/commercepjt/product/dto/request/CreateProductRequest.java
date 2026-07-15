@@ -16,11 +16,11 @@ public class CreateProductRequest {
     private String category;
 
     @Max(value = 100000000, message = "가격은 1억 원을 넘을 수 없습니다.")
-    @PositiveOrZero(message = "초기가격은 0원 이상 이어야합니다.")
+    @Positive(message = "초기가격은 0원 이상 이어야합니다.")
     private int price;
 
     @Max(value = 999999, message = "초기 재고는 999,999개를 초과할 수 없습니다.")
-    @PositiveOrZero(message = "초기 재고 입력0개 이상이어야 합니다")
+    @Positive(message = "초기 재고 입력0개 이상이어야 합니다")
     private int stock;
 
     @NotNull(message = "ON_SALE | SOLD_OUT | DISCONTINUED 중 하나로 입력하세요")
