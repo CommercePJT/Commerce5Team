@@ -13,6 +13,8 @@ import com.example.commercepjt.admin.repository.AdminSpecification;
 import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.NotFoundException;
+import com.example.commercepjt.order.repository.OrderRepository;
+import com.example.commercepjt.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,8 @@ import java.util.List;
 public class AdminService {
 
     private final AdminRepository adminRepository;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
 
     // 내 프로필 조회
@@ -98,7 +102,7 @@ public class AdminService {
                 request.getPhone());
 
         // 4. 응답 반환
-       return new ProfileResponse(admin);
+        return new ProfileResponse(admin);
     }
 
     // 관리자 정보 수정
@@ -196,10 +200,25 @@ public class AdminService {
     // 관리자 삭제
     @Transactional
     public void deleteAdmin(Long id) {
-        // 1. 관리자 조회
+
+        // 관리자 조회
         Admin admin = adminRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("관리자를 찾을 수 없습니다."));
-        // 2. 삭제
+
+        // 등록 상품 존재 여부 확인
+        if (productRepository.existsByAdminId(id)) {
+            throw new DuplicateException(
+                    "등록한 상품이 있는 관리자는 삭제할 수 없습니다."
+            );
+        }
+
+        // 처리 주문 존재 여부 확인
+        if (orderRepository.existsByAdminId(id)) {
+            throw new DuplicateException(
+                    "처리한 주문 내역이 있는 관리자는 삭제할 수 없습니다."
+            );
+        }
+
         adminRepository.delete(admin);
     }
 }

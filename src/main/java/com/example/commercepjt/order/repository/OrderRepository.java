@@ -17,4 +17,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> search(@Param("keyword") String keyword,
                        @Param("status") OrderStatus status,
                        Pageable pageable);
+
+    boolean existsByCustomerCustomerId(Long customerId);
+
+    boolean existsByProduct_ProductId(Long productId);
+
+    // 관리자 삭제 전 처리 주문 존재 여부 확인
+    boolean existsByAdminId(Long adminId);
 }
