@@ -117,6 +117,7 @@ public class CustomerService {
         customerRepository.delete(customer);
     }
 
+
     // 고객이 있으면 Customer 반환, 없으면 404 예외
     private Customer customerOrElseThrow(Long customerId) {
 
