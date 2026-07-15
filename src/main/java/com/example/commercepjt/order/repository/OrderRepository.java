@@ -19,4 +19,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                        Pageable pageable);
 
     boolean existsByCustomerCustomerId(Long customerId);
+
+    boolean existsByProduct_ProductId(Long productId);
+
+
 }

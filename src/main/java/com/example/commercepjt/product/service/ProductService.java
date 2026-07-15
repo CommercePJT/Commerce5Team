@@ -2,9 +2,11 @@ package com.example.commercepjt.product.service;
 
 import com.example.commercepjt.admin.entity.Admin;
 import com.example.commercepjt.admin.repository.AdminRepository;
+import com.example.commercepjt.admin.service.AdminService;
 import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.DuplicateException;
 import com.example.commercepjt.common.exception.NotFoundException;
+import com.example.commercepjt.order.repository.OrderRepository;
 import com.example.commercepjt.product.dto.request.CreateProductRequest;
 import com.example.commercepjt.product.dto.response.*;
 import com.example.commercepjt.product.dto.request.UpdateProductRequest;
@@ -29,6 +31,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
+    private final OrderRepository orderRepository;
 
     // 상품 등록
     @Transactional
@@ -89,7 +92,7 @@ public class ProductService {
             Long productId,
             UpdateProductRequest request
     ) {
-        if (productRepository.existsByName(request.getName())) {
+        if (productRepository.existsByNameAndProductIdNot(request.getName(), productId)) {
             throw new DuplicateException("이미 등록된 상품 이름입니다.");
         }
         Product product = findProduct(productId);
@@ -133,6 +136,10 @@ public class ProductService {
     @Transactional
     public void delete(Long productId) {
         Product product = findProduct(productId);
+
+        if (orderRepository.existsByProduct_ProductId(productId)) {
+            throw new IllegalArgumentException("주문 내역이 존재하는 상품은 삭제할 수 없습니다.");
+        }
 
         productRepository.delete(product);
     }
