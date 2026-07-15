@@ -7,6 +7,7 @@ import com.example.commercepjt.auth.dto.response.LoginAdminInfoResponse;
 import com.example.commercepjt.auth.dto.response.SignupAdminResponse;
 import com.example.commercepjt.auth.service.AuthService;
 import com.example.commercepjt.auth.session.SessionConst;
+import com.example.commercepjt.common.config.LoginAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -58,17 +59,18 @@ public class AuthController {
         // 기존 세션 조회
         HttpSession session = request.getSession(false);
         // 현재 세션 삭제
-        if (session != null) session.invalidate();
+        if (session != null) {
+            session.invalidate();
+        }
         // 로그아웃 성공 시 204 No Content 반환
         return ResponseEntity.noContent().build();
     }
-
+    //비밀번호변경
     @PatchMapping("/me/password")
     public ResponseEntity<Void> changePassword(
-            @RequestBody UpdatePasswordRequest request,
-            HttpSession session
+            @Valid @RequestBody UpdatePasswordRequest request,
+            @LoginAdmin Long adminId
     ) {
-        Long adminId = (Long) session.getAttribute("adminId");
         authService.changePassword(adminId, request);
 
         return ResponseEntity.noContent().build();
