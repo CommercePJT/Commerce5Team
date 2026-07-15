@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ReviewDetailResponse {
 
-    private final String productName;
+    private final String productName;  // 상품상태
     private final String customerName;
     private final String customerEmail;
     private final LocalDateTime createdAt;
