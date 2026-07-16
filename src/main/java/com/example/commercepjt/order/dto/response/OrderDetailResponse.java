@@ -6,8 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-//주문 상세 조회 응답 - 고객 직접 주문이면 admin 관련 필드는 null
-
 @Getter
 public class OrderDetailResponse {
 
@@ -19,6 +17,7 @@ public class OrderDetailResponse {
     private final int totalPrice;
     private final LocalDateTime orderedAt;
     private final String status;
+    private final String cancelReason;
     private final String adminName;
     private final String adminEmail;
     private final String adminRole;
@@ -34,6 +33,7 @@ public class OrderDetailResponse {
         this.totalPrice = order.getTotalPrice();
         this.orderedAt = order.getCreatedAt();
         this.status = order.getStatus().name();
+        this.cancelReason = order.getCancelReason();
         this.adminName = admin != null ? admin.getName() : null;
         this.adminEmail = admin != null ? admin.getEmail() : null;
         this.adminRole = admin != null ? admin.getRole().name() : null;
