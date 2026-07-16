@@ -5,6 +5,7 @@ import com.example.commercepjt.admin.repository.AdminRepository;
 import com.example.commercepjt.common.dto.PageInfo;
 import com.example.commercepjt.common.exception.NotFoundException;
 import com.example.commercepjt.customer.entity.Customer;
+import com.example.commercepjt.customer.entity.CustomerStatus;
 import com.example.commercepjt.customer.repository.CustomerRepository;
 import com.example.commercepjt.order.dto.request.CreateOrderRequest;
 import com.example.commercepjt.order.dto.response.*;
@@ -32,10 +33,17 @@ public class OrderService {
     private final AdminRepository adminRepository;
 
     // CS 주문 생성
-    @Transactional
+  @Transactional
     public CreateOrderResponse create(CreateOrderRequest request, Long adminId) {
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
                 () -> new NotFoundException("고객을 찾을 수 없습니다."));
+
+        if (customer.getStatus() == CustomerStatus.SUSPENDED) {          
+            throw new IllegalArgumentException("정지된 고객은 주문할 수 없습니다.");
+        }
+        if (customer.getStatus() == CustomerStatus.INACTIVE) {           
+            throw new IllegalArgumentException("비활성 고객은 주문할 수 없습니다.");
+        }
 
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
                 () -> new NotFoundException("상품을 찾을 수 없습니다."));
