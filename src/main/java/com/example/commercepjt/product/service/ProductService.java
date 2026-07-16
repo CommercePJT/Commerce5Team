@@ -60,16 +60,7 @@ public class ProductService {
     public ProductDetailResponse findOne(Long productId) {
         Product product = findProduct(productId);
 
-        return new ProductDetailResponse(
-                product.getName(),
-                product.getCategory(),
-                product.getPrice(),
-                product.getStock(),
-                product.getStatus().name(),
-                product.getCreatedAt(),
-                product.getAdmin().getName(),
-                product.getAdmin().getEmail()
-        );
+        return ProductDetailResponse.from(product);
     }
 
     // 상품 리스트 조회
@@ -144,23 +135,18 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    //
+    //응답 공통 메서드
     private ProductResponse toProductResponse(Product product) {
-        return new ProductResponse(
-                product.getProductId(),
-                product.getName(),
-                product.getCategory(),
-                product.getPrice(),
-                product.getStock(),
-                product.getStatus().name(),
-                product.getCreatedAt(),
-                product.getAdmin().getName()
-        );
+
+        return ProductResponse.from(product);
     }
 
     //상품 겅증 공통 메서드
     private Product findProduct(Long productId) {
+
         return productRepository.findById(productId).orElseThrow(
-                () -> new NotFoundException("상품을 찾을 수 없습니다."));
+
+                () -> new NotFoundException("상품을 찾을 수 없습니다.")
+        );
     }
 }

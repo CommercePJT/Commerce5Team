@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProductDetailResponse {
 
-    private  final String name;
+    private final String name;
     private final String category;
     private final int price;
     private final int stock;
