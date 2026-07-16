@@ -18,6 +18,7 @@ public class OrderResponse {
     private final int totalPrice;
     private final LocalDateTime orderedAt;
     private final String status;
+    private final String cancelReason;
     private final String adminName;
 
     public OrderResponse(Order order) {
@@ -29,6 +30,7 @@ public class OrderResponse {
         this.totalPrice = order.getTotalPrice();
         this.orderedAt = order.getCreatedAt();
         this.status = order.getStatus().name();
+        this.cancelReason = order.getCancelReason();
         this.adminName = order.getAdmin() != null ? order.getAdmin().getName() : null;
     }
 }
